@@ -1,0 +1,10 @@
+{
+  "name": "programme-decision-sequences",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A two-tab programme decision-sequence simulator and framing tool.",
+  "scripts": {
+    "test": "node tests/smoke.mjs"
+  }
+}
+
