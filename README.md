@@ -1,6 +1,12 @@
 # Programme decision sequences
 
-An inspectable, two-tab experiment in programme decisions under uncertainty.
+Inspectable experiments in programme decisions under uncertainty: the original two-tab simulator plus a separate exact decision-tree essay.
+
+## New essay: evidence before commitment
+
+Open [When is evidence worth waiting for?](evidence.html). Reserve a one-bus or three-bus shuttle for a fictional mountain festival, wait for fresh booking counts, or pay for a demand survey before the hire hold expires. Six worked experiments distinguish uncertainty reduction, decision value, evidence latency, routine versus commissioned evidence, adaptive stopping, and a first test whose value lies in guiding a second one. Every possible policy path is inspectable. Applied settings are retained in the page URL; no programme record or file is created.
+
+The finite solver conditions on received evidence, never hidden truth. An independent check evaluates 673,596 deterministic policies across 1,701 two-review configurations. It is exact for the declared toy model, not a real transport plan or evidence of practitioner value. [Model and verification contract](EVIDENCE_METHOD.md).
 
 The public entry page is [`index.html`](index.html):
 
@@ -61,5 +67,6 @@ The checks evaluate the model embedded in `index.html`: deterministic seeds, fin
 
 `FORAY-PROG-DECISION-SEQ · R-005`
 
-This repository is the experiment-layer receiver for the local Portfolio Wave foray. The return receipt records what the prototype changed in the plan and intent layer.
+2026-09-06 extension: `FORAY-PROG-DECISION-SEQ · R-009` — evidence earns value through feasible future choices before commitment. Original apps and provenance snapshots retained. The earlier DLA tail-policy limitation is now explicit; its numerical behaviour has not been silently changed.
 
+This repository is the experiment-layer receiver for the local Portfolio Wave foray. The return receipt records what the prototype changed in the plan and intent layer.

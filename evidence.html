@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An exact toy decision lab: when does evidence change a programme scope decision enough to justify its cost and delay?">
+  <title>Evidence before commitment · Programme decision sequences</title>
+  <link rel="stylesheet" href="evidence.css">
+  <script src="evidence-model.js" defer></script>
+  <script src="evidence-ui.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#workbench">Skip to experiment</a>
+  <header class="shell">
+    <nav aria-label="Foray"><a href="index.html">← Sequence, belief &amp; policy lab</a><span>FORAY 220 · ESSAY 03</span></nav>
+    <h1>When is evidence worth waiting for?</h1>
+    <p class="lede">A mountain festival needs a shuttle from the village to the trailhead. Reserve one bus or a three-bus fleet? Wait for fresh booking counts, or pay for a demand survey before the hire reservation expires?</p>
+    <p class="boundary">Fictional festival · one review per day · illustrative net service-value points. A teaching model, not a real transport plan or budget.</p>
+  </header>
+  <main class="shell" id="workbench">
+    <section class="cases" aria-label="Worked experiments">
+      <button type="button" data-preset="timely" aria-pressed="true">1. Worth buying</button>
+      <button type="button" data-preset="unchanged" aria-pressed="false">2. Clearer, not better</button>
+      <button type="button" data-preset="late" aria-pressed="false">3. Too late</button>
+      <button type="button" data-preset="routine" aria-pressed="false">4. Routine is enough</button>
+      <button type="button" data-preset="sequential" aria-pressed="false">5. Know when to stop testing</button>
+      <button type="button" data-preset="nonmyopic" aria-pressed="false">6. One test isn’t enough</button>
+    </section>
+    <div class="workbench">
+      <aside class="card controls">
+        <h2>Your decision setting</h2>
+        <form id="settings" novalidate>
+          <label>Prior chance of high demand <span class="hint">0 to 1; 0.5 means equally plausible worlds</span><input id="prior" name="prior" type="number" min="0" max="1" step="0.01" required value="0.5"></label>
+          <div class="pair">
+            <label>Survey accuracy <input id="accuracy" name="accuracy" type="number" min="0.5" max="1" step="0.01" required value="0.8"></label>
+            <label>Booking-signal accuracy <input id="passive" name="passive" type="number" min="0.5" max="1" step="0.01" required value="0.5"></label>
+          </div>
+          <span class="hint">Fresh test = demand survey; routine = a new booking count. 0.5 is uninformative; 1 is perfect. Accuracy is the same in both demand worlds.</span>
+          <div class="pair">
+            <label>Survey cost <input id="cost" name="cost" type="number" min="0" max="30" step="0.5" required value="4"></label>
+            <label>Cost per review waited <input id="delay" name="delay" type="number" min="0" max="15" step="0.5" required value="3"></label>
+          </div>
+          <div class="pair">
+            <label>Commit by review <input id="deadline" name="deadline" type="number" min="1" max="4" step="1" required value="2"></label>
+            <label>Survey takes days <input id="latency" name="latency" type="number" min="1" max="5" step="1" required value="1"></label>
+          </div>
+          <button class="primary" type="submit">Recalculate experiment</button>
+          <p id="form-status" class="status" role="status" aria-live="polite"></p>
+          <p id="form-error" class="error" role="alert" hidden></p>
+        </form>
+        <p class="hint">Applied settings live in this page’s address. Reload reopens them; no programme record or file is created. Browsing a branch is temporary.</p>
+        <button id="reset" type="button" class="text-button">Reset to the first experiment</button>
+      </aside>
+      <div class="results">
+        <section class="card verdict" aria-labelledby="verdict-title">
+          <p class="eyebrow">Best first move in this toy model</p>
+          <h2 id="verdict-title"></h2>
+          <p id="verdict-copy"></p>
+          <div class="metrics">
+            <div><span>Best policy, after costs</span><strong id="policy-value"></strong></div>
+            <div><span>Best commitment now</span><strong id="commit-value"></strong></div>
+            <div><span>Gain from keeping options open</span><strong id="advantage"></strong></div>
+          </div>
+          <div id="timeline" class="timeline" aria-label="Evidence arrival and commitment timing"></div>
+        </section>
+        <section class="card" aria-labelledby="difference-title">
+          <h2 id="difference-title">Less uncertainty ≠ a better decision</h2>
+          <p>Isolate <strong>one fresh test</strong>, then commit. This comparison is not the multi-review optimum above: a first test can also earn its value by guiding a second test.</p>
+          <div class="metrics compact">
+            <div><span>Expected uncertainty removed</span><strong id="bits"></strong><small>Shannon bits; information alone</small></div>
+            <div><span>Gross decision value, if timely</span><strong id="gross"></strong><small>Before test and waiting costs</small></div>
+            <div><span>Usable for this commitment</span><strong id="usable"></strong><small id="usable-caption"></small></div>
+          </div>
+          <p id="difference-copy" class="finding"></p>
+          <div id="single-branches" class="branch-pair"></div>
+        </section>
+      </div>
+    </div>
+
+    <section class="card explorer" aria-labelledby="explore-title">
+      <div class="section-heading"><div><p class="eyebrow">Decision → information → updated state → decision</p><h2 id="explore-title">Walk the decision, not the hidden world</h2></div><button id="start-again" type="button">Back to review 0</button></div>
+      <p>Inspect the recommended route or a different feasible choice. Select a possible signal to see what the next decision can know. These are branches to explore—not evidence you have collected.</p>
+      <p id="breadcrumb" class="breadcrumb"></p>
+      <div class="node-summary"><strong id="node-heading"></strong><span id="node-detail"></span></div>
+      <div class="explorer-grid">
+        <div class="table-wrap"><table><caption>Alternatives at this information state; values include future costs, not costs already paid.</caption><thead><tr><th scope="col">Next move</th><th scope="col">Expected value</th><th scope="col">Inspect</th></tr></thead><tbody id="alternatives"></tbody></table></div>
+        <div id="branch-inspector" class="inspector" aria-live="polite"></div>
+      </div>
+      <p class="boundary">At a commitment, this essay ends. Evidence could matter to later operations, but those decisions are outside this model.</p>
+    </section>
+
+    <section class="card" aria-labelledby="paths-title">
+      <h2 id="paths-title">Every path the recommended policy may take</h2>
+      <p>All possible signal histories under the policy—not sampled runs. Path values are conditional expectations, not guaranteed realised outcomes.</p>
+      <div class="table-wrap"><table><thead><tr><th scope="col">Information received</th><th scope="col">Chance</th><th scope="col">Commit at</th><th scope="col">Belief: high</th><th scope="col">Scope</th><th scope="col">Costs paid</th><th scope="col">Net value</th></tr></thead><tbody id="paths"></tbody></table></div>
+      <p id="path-check" class="receipt"></p>
+    </section>
+
+    <section class="card" aria-labelledby="clairvoyance-title">
+      <h2 id="clairvoyance-title">The tempting answer that cheats</h2>
+      <p>If we optimise each future world separately, we reserve three buses for high demand and one for low demand. But at review 0 we do not know which world we are in.</p>
+      <div class="metrics compact"><div><span>One decision from today’s information</span><strong id="nonanticipative"></strong></div><div><span>Choose after seeing the true world</span><strong id="clairvoyant"></strong></div><div><span>Perfect-information gap</span><strong id="pi-gap"></strong></div></div>
+      <p id="same-history" class="finding"></p>
+      <p class="hint">The second number is a cost-free, same-time upper bound—not an available policy. The exact solver uses only review number and current belief, never the hidden world. A signal permits different later choices only after it arrives.</p>
+    </section>
+
+    <details class="card" id="model-notes">
+      <summary>The model, assumptions and limits</summary>
+      <h2>The mountain-festival shuttle</h2>
+      <p>The organiser reviews the booking every day. At the final review the bus operator needs a binding reservation. Weekend demand will be high or low; that hidden condition is fixed during this short booking window. A three-bus fleet serves a busy festival well but wastes resources at a quiet one; one bus is less ambitious but useful in either case.</p>
+      <p>The following <em>net service-value points</em> combine assumed visitor benefit and bus-hire costs. They are illustrative—not fares, visitor numbers or money. Only survey fees and the cost of keeping arrangements open are subtracted separately. The one-bus option deliberately stays available until the deadline.</p>
+      <div class="table-wrap"><table><thead><tr><th scope="col">Reservation</th><th scope="col">High demand</th><th scope="col">Low demand</th></tr></thead><tbody><tr><th scope="row">Three buses</th><td>60</td><td>−40</td></tr><tr><th scope="row">One bus</th><td>25</td><td>5</td></tr><tr><th scope="row">No shuttle</th><td>0</td><td>0</td></tr></tbody></table></div>
+      <p>One bus always beats no shuttle in this particular table. “Stop testing” does not mean “cancel the shuttle”. Three buses beat one when the chance of high demand exceeds <strong>56.25%</strong>. At equality, the solver prefers one bus; otherwise ties prefer committing over waiting, and routine booking evidence over a paid survey.</p>
+      <ul>
+        <li>Every signal is a <strong>fresh, conditionally independent observation</strong> given the same hidden world. Re-reading the same report is not another test. Correlated evidence requires a different model.</li>
+        <li>One review is one day. Waiting gives a high/low signal from a fresh booking batch at the next daily review. A commissioned survey takes its stated number of days and gives one high/low result. The small organising team can pursue only one evidence route at a time: no routine booking signal is processed during the survey. This is a simplifying capacity assumption, not a claim that bookings actually stop.</li>
+        <li>A result arriving exactly at the final review is usable. A test arriving after it is unavailable for this decision. We do not purchase or charge for unavailable tests.</li>
+        <li>Commitment ends the model. No later benefits from learning, reversals, option expiry before the deadline, changing world, multiple latent parameters or authority decisions are modelled.</li>
+        <li>Expected value is the chosen objective. Risk aversion, tail constraints, uncertain payoffs and model error could change the result. These numbers are not calibrated to a real programme.</li>
+      </ul>
+      <h3>Powell’s five components</h3>
+      <dl class="definition"><dt>State S</dt><dd>Daily review t and belief p that demand is high; fixed model settings are known. Past evidence costs are sunk and do not affect future choices here.</dd><dt>Decision x</dt><dd>Reserve three buses / one bus / no shuttle, wait for the next booking count, or commission a fresh demand survey.</dd><dt>New information W</dt><dd>A positive (high-demand) or negative (low-demand) signal, received after the chosen wait or survey.</dd><dt>Transition</dt><dd>Advance the daily review clock and update p by Bayes’ rule; reservation terminates the decision.</dd><dt>Objective</dt><dd>Maximise expected net service value less survey fees and waiting costs, before the hire reservation expires.</dd></dl>
+      <h3>What is computed</h3>
+      <p>For every feasible evidence choice, the solver enumerates both possible signals, updates the belief, and solves the remaining decision. At the deadline it considers commitment only. It backs up expected values and keeps the best move. This finite tree is evaluated exactly, apart from floating-point arithmetic; there is no training, Monte Carlo sampling or claim of general policy optimality.</p>
+      <pre>V(t,p) = max { best commitment(p),
+  − waiting cost + Σ P(signal | p) V(t+1, posterior),
+  − test fee − latency × waiting cost
+       + Σ P(signal | p) V(t+latency, posterior) }
+Evidence choices are included only when their result arrives by T.</pre>
+      <p>Gross one-test value = expected best commitment after the signal − best commitment before it. Information gain measures expected entropy reduction. They answer different questions.</p>
+    </details>
+
+    <details class="card" id="sources">
+      <summary>Sources, predecessor and what this essay adds</summary>
+      <p>The 220 foray asks how to separate scheduled work, management decisions and uncertainty-reduction actions, then align them to an appropriate cadence. This essay isolates a missing mechanism: evidence has value through the future decisions it changes.</p>
+      <ul>
+        <li>Warren B. Powell, <a href="https://doi.org/10.1561/0200000103">Sequential Decision Analytics and Modeling: Modeling with Python, Part I</a> (2022), §1.4: state, decision, new information, transition and objective.</li>
+        <li>Powell, <a href="https://doi.org/10.1561/0200000103-II">Part II</a>, §12.4.3: value-of-information lookahead through posterior-dependent next decisions. The festival shuttle and counterexamples here are our own teaching construction, not a case study attributed to Powell.</li>
+        <li><a href="https://github.com/wbpowell328/stochastic-optimization">Powell’s public case-study code</a> and the older <a href="https://github.com/lawrencerowland/Project_decisions">Project_decisions experiments</a> form the implementation lineage. This solver is newly written.</li>
+      </ul>
+      <p><a href="index.html">The earlier two-tab simulator</a> remains available. Its DLA representative samples latent parameters and lets its future tail policy use them, without learning inside the rollout. It is an illustrative comparison, not a valid valuation of information. This separate essay supplies an exact information-respecting witness; it does not silently replace that simulator.</p>
+      <p><a href="EVIDENCE_METHOD.md">Read the method and verification contract</a> · <a href="https://github.com/lawrencerowland/Programme-decision-sequences">Repository</a></p>
+    </details>
+    <footer>FORAY-PROG-DECISION-SEQ · R-009 · 6 September 2026. Model and interface checked by an agent; usefulness with a programme director remains untested.</footer>
+  </main>
+  <noscript><p class="shell error">This experiment needs JavaScript. The assumptions and sources below remain readable.</p></noscript>
+</body>
+</html>

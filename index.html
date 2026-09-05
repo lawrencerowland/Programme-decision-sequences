@@ -278,6 +278,7 @@
   </header>
 
   <main class="shell">
+    <p class="card" style="padding:16px 20px;margin-bottom:16px"><strong>New separate essay:</strong> <a href="evidence.html">3 — When is evidence worth waiting for?</a> · An exact decision tree for evidence cost, delay and commitment. The two original views remain below.</p>
     <div class="tabs" role="tablist" aria-label="Programme decision sequence views">
       <button class="tab-button" id="tab-sequence" role="tab" aria-selected="true" aria-controls="panel-sequence">1 — Sequence &amp; belief</button>
       <button class="tab-button" id="tab-lab" role="tab" aria-selected="false" aria-controls="panel-lab">2 — Policy lab &amp; framing</button>
@@ -369,7 +370,7 @@
           <div class="card policy-card"><h3>PFA · Policy function approximation</h3><p>A direct mapping from state to action. Here: a transparent set-point rule with an uncertainty-sensitive information choice.</p></div>
           <div class="card policy-card"><h3>CFA · Cost function approximation</h3><p>Choose an action by optimising a deliberately modified immediate cost. Here: penalties add target margin and uncertainty reserve.</p></div>
           <div class="card policy-card"><h3>VFA · Value function approximation</h3><p>Choose using immediate contribution plus an approximation of downstream value. Here: remaining effort, target gap and belief variance.</p></div>
-          <div class="card policy-card"><h3>DLA · Direct lookahead approximation</h3><p>Optimise a finite sampled future model. Here: four quarters of rollouts with a simple tail policy—not MCTS and not a proof of optimality.</p></div>
+          <div class="card policy-card"><h3>DLA · Direct lookahead approximation</h3><p>Illustrative four-quarter rollouts—not MCTS or a proof of optimality. The tail policy uses sampled hidden parameters without learning inside the rollout, so this representative cannot establish the value of evidence. <a href="evidence.html">See the exact information-respecting essay.</a></p></div>
         </div>
       </div>
 

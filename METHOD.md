@@ -1,5 +1,11 @@
 # Method and correction record
 
+## 2026-09-06: separate exact evidence essay
+
+[Evidence before commitment](evidence.html) adds an exact finite belief-dependent policy tree. Its full contract is in [EVIDENCE_METHOD.md](EVIDENCE_METHOD.md). The two original views remain available and their model code is unchanged.
+
+New code-reading limitation: the original `lookaheadScore` samples drift and effectiveness, then lets its future tail policy use those sampled latent parameters. It does not update beliefs inside the rollout, and information effort does not change rollout observation precision. It must not be used as a demonstration of the value of information or a fair information-constrained policy optimum. The new essay supplies a separate, explicitly non-anticipative calculation rather than silently changing the original simulator's results.
+
 ## Purpose
 
 The experiment asks whether a project or programme can gain useful structure from sequential-decision modelling even before it has a validated reinforcement-learning model.
@@ -110,4 +116,3 @@ The original prototype described its branching view as an ingredient for MCTS. T
 This experiment can support a conversation about decision timing, information requirements, feasible actions, policy transparency and model risk.
 
 It cannot establish climate efficacy, programme affordability, an optimal intervention, a safe action or an evidence-backed management recommendation. Moving beyond the toy model would require domain review, calibrated transition/evidence models, reference-class data, governance constraints, independent validation and explicit assurance gates.
-
