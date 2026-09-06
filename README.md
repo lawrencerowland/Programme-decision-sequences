@@ -70,3 +70,5 @@ The checks evaluate the model embedded in `index.html`: deterministic seeds, fin
 2026-09-06 extension: `FORAY-PROG-DECISION-SEQ · R-009` — evidence earns value through feasible future choices before commitment. Original apps and provenance snapshots retained. The earlier DLA tail-policy limitation is now explicit; its numerical behaviour has not been silently changed.
 
 This repository is the experiment-layer receiver for the local Portfolio Wave foray. The return receipt records what the prototype changed in the plan and intent layer.
+
+The [evidence essay](evidence.html) now opens with a clickable policy fork, expected-value bridge, evidence-arrival lanes and belief/decision-boundary chart. All six examples drive the visuals; the solver, original simulator and detailed calculations are retained unchanged. This extends the explanation, not the programme model. See [the visual verification note](EVIDENCE_METHOD.md#visual-explanation--6-september-2026).

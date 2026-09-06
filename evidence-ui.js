@@ -52,7 +52,7 @@
         ? `One test alone leaves the same scope choice best after either answer. It removes ${fmt(single.informationBits)} bits of uncertainty but adds no immediate expected scope value. ${root.value > commit.value + 1e-9 ? (root.best.id === 'test' && single.informationBits > 1e-9 ? `Yet the chosen test-first policy adds ${fmt(root.value - commit.value)} points through subsequent evidence choices. Zero one-test value does not mean zero sequential value.` : `Another evidence route adds ${fmt(root.value - commit.value)} points. That does not establish value for this fresh test; inspect the recommended route below.`) : 'The remaining evidence opportunities also fail to improve on committing now; test and waiting costs still count.'}`
         : `The test can cross the scope-choice boundary. Its ${fmt(single.grossValue)}-point gross gain must cover ${fmt(c.cost)} points for the test and ${fmt(c.delay * c.latency)} for waiting. The multi-review policy may do better than this single-test comparison.`;
     $('single-branches').innerHTML = single.branches.map(b => `<div class="branch"><strong>${b.sign === '+' ? 'Positive' : 'Negative'} signal · chance ${pct(b.probability)}</strong><span>Updated chance of high demand: ${pct(b.posterior)}</span><span>${b.decision.label} · expected ${fmt(b.decision.value)} points</span>${timely ? '' : '<span>Hypothetical only: arrives too late.</span>'}</div>`).join('');
-    $('timeline').innerHTML = Array.from({ length: Math.max(c.deadline, c.latency) + 1 }, (_, t) => `<div class="tick ${t === c.deadline ? 'due' : t === c.latency && !timely ? 'late' : ''}"><b>Review ${t}</b><span>${[t === 0 ? 'Choose now' : '', t === c.deadline ? 'Commit by here' : '', t === c.latency ? 'Fresh test arrives' : ''].filter(Boolean).join(' · ')}</span></div>`).join('');
+    window.EvidenceVisuals.renderOverview(solution);
     const paths = M.policyPaths(root);
     $('paths').innerHTML = paths.map(p => `<tr><td>${p.history.length ? p.history.map(h => `${h.action === 'test' ? 'Test' : 'Routine'} ${h.sign} @${h.arrival}`).join(' → ') : 'None needed'}</td><td class="num">${pct(p.probability)}</td><td>${p.t}</td><td class="num">${pct(p.posterior)}</td><td>${p.action.label.replace('Commit ', '')}</td><td class="num">${fmt(p.spent)}</td><td class="num">${fmt(p.net)}</td></tr>`).join('');
     $('path-check').textContent = `${paths.length} terminal ${paths.length === 1 ? 'path' : 'paths'} · probabilities total ${pct(paths.reduce((s, p) => s + p.probability, 0))} · probability-weighted net value ${fmt(paths.reduce((s, p) => s + p.probability * p.net, 0))} = policy value.`;
@@ -62,6 +62,7 @@
     renderFocus();
   }
   function renderFocus() {
+    window.EvidenceVisuals.renderPolicy(focus, history, spent, solution.config);
     $('breadcrumb').textContent = history.length ? `Review 0 → ${history.map(h => `${label(h.action)} ${h.sign} at review ${h.arrival}`).join(' → ')}` : 'Review 0 · no new evidence received';
     $('node-heading').textContent = `Review ${focus.t} · chance of high demand ${pct(focus.p)}`;
     $('node-detail').textContent = `Best remaining value ${fmt(focus.value)} · costs already paid ${fmt(spent)}`;
@@ -89,6 +90,14 @@
   document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => apply(presets[b.dataset.preset], `Worked experiment ${b.textContent} loaded.`)));
   $('reset').addEventListener('click', () => apply(presets.timely, 'Reset to the first experiment.'));
   $('start-again').addEventListener('click', () => { focus = solution.root; inspected = focus.best.id; history = []; spent = 0; renderFocus(); });
+  $('visual-reset').addEventListener('click', () => { focus = solution.root; inspected = focus.best.id; history = []; spent = 0; renderFocus(); });
+  $('policy-map').addEventListener('click', e => {
+    const b = e.target.closest('[data-follow-signal]'); if (!b) return;
+    const a = focus.best, branch = a.branches.find(s => s.sign === b.dataset.followSignal);
+    if (!branch) return;
+    history.push({ action: a.id, sign: branch.sign, arrival: branch.node.t }); spent += a.expense; focus = branch.node; inspected = focus.best.id; renderFocus();
+    ($('policy-map').querySelector('[data-follow-signal]') || $('visual-reset')).focus();
+  });
   $('alternatives').addEventListener('click', e => { const b = e.target.closest('[data-inspect]'); if (b) { inspected = b.dataset.inspect; renderFocus(); } });
   $('branch-inspector').addEventListener('click', e => {
     const b = e.target.closest('[data-signal]'); if (!b) return;

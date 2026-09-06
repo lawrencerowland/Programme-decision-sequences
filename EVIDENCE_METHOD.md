@@ -64,3 +64,16 @@ Not a real transport plan, budget or recommendation. The payoff table, binary de
 ## Scenario decision
 
 During the 6 September session Lawrence explicitly invited a better toy scenario than the climate programme. The mountain-festival shuttle was selected because a bus-hire deadline, uncertain demand, fresh bookings and a paid survey give direct meaning to the model's choices. This changes the new essay's scenario, not its equations or Powell method. The original climate simulator and fixed original foray prompt are retained unchanged.
+
+## Visual explanation — 6 September 2026
+
+The essay now opens on a linked visual explanation rather than the parameter form. This is a presentation extension, not a new decision model or a broader claim about programme dynamics.
+
+- A clickable policy fork shows the recommended next evidence action, signal probabilities, posterior beliefs and the next recommended choices. Following a signal updates the existing detailed explorer to the same information state; either reset returns both to review 0. It never exposes the hidden world to the policy.
+- An expected-value bridge reconciles commitment now, the gross benefit of adapting, expected survey fees, expected waiting costs and net policy value. Fees and elapsed time are probability-weighted over all paths actually followed. It does not charge a rejected survey or a hypothetical late test.
+- Three aligned timing lanes compare one routine count and one fresh survey with the commitment window, starting today. They are alternatives, not concurrent observations. A result at the deadline remains usable; a later result is marked unavailable.
+- A belief chart places the prior and the two one-survey posteriors against the 56.25% reservation boundary. It is explicitly separate from the multi-review policy: the sixth witness still has zero one-survey gain and positive sequential value.
+
+`evidence-model.js` and the original simulator are unchanged. All existing settings, six examples, numerical tables, alternative-action inspection, URL persistence, sources and assumptions remain available. Visual branches are temporary exploration, not a real booking or evidence record. The original receipt/reload/correction and non-effect boundaries continue to apply.
+
+`tests/evidence-visuals.cjs` verifies the presentation decomposition across 1,458 settings, including zero-probability cases, deadline exclusion and the nonmyopic witness. Existing independent policy-enumeration tests still pass. The expanded browser test covers the visual branch/reset journey, keyboard focus at a terminal choice, shared state with the detailed explorer, six examples, correction/reload, and 360/390/768/1440px layouts. Desktop and phone visual captures were inspected. These are agent checks, not evidence of improved audience understanding or human-user testing.

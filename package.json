@@ -4,7 +4,7 @@
   "private": true,
   "description": "A two-tab programme decision-sequence simulator and framing tool.",
   "scripts": {
-    "test": "node tests/smoke.mjs && node tests/evidence.cjs",
+    "test": "node tests/smoke.mjs && node tests/evidence.cjs && node tests/evidence-visuals.cjs",
     "test:browser": "node tests/browser.cjs"
   }
 }

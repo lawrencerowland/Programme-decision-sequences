@@ -7,6 +7,7 @@
   <title>Evidence before commitment · Programme decision sequences</title>
   <link rel="stylesheet" href="evidence.css">
   <script src="evidence-model.js" defer></script>
+  <script src="evidence-visuals.js" defer></script>
   <script src="evidence-ui.js" defer></script>
 </head>
 <body>
@@ -25,6 +26,29 @@
       <button type="button" data-preset="routine" aria-pressed="false">4. Routine is enough</button>
       <button type="button" data-preset="sequential" aria-pressed="false">5. Know when to stop testing</button>
       <button type="button" data-preset="nonmyopic" aria-pressed="false">6. One test isn’t enough</button>
+    </section>
+    <section class="card visual-essay" aria-labelledby="visual-title">
+      <div class="section-heading"><div><p class="eyebrow">Follow what the evidence makes possible</p><h2 id="visual-title">One choice now. Different choices after evidence.</h2></div><button id="visual-reset" type="button">Back to the first choice</button></div>
+      <p id="visual-lesson" class="visual-lesson"></p>
+      <div class="visual-layout">
+        <figure class="policy-figure" aria-labelledby="policy-map-title">
+          <figcaption id="policy-map-title">The recommended route</figcaption>
+          <p id="visual-history" class="hint" role="status" aria-live="polite"></p>
+          <div id="policy-map"></div>
+          <p id="policy-map-caption" class="figure-note"></p>
+        </figure>
+        <figure class="value-figure" aria-labelledby="value-map-title">
+          <figcaption id="value-map-title">What keeping the choice open is worth</figcaption>
+          <p class="hint">Whole recommended policy · expected service-value points</p>
+          <div id="value-bridge"></div>
+          <p id="value-caption" class="figure-note"></p>
+        </figure>
+      </div>
+      <figure class="timing-figure" aria-labelledby="timing-title">
+        <figcaption id="timing-title">Evidence has to arrive while a choice is still open</figcaption>
+        <div id="timeline" class="timeline" aria-label="Evidence arrival and commitment timing"></div>
+        <p id="timing-caption" class="figure-note"></p>
+      </figure>
     </section>
     <div class="workbench">
       <aside class="card controls">
@@ -61,7 +85,6 @@
             <div><span>Best commitment now</span><strong id="commit-value"></strong></div>
             <div><span>Gain from keeping options open</span><strong id="advantage"></strong></div>
           </div>
-          <div id="timeline" class="timeline" aria-label="Evidence arrival and commitment timing"></div>
         </section>
         <section class="card" aria-labelledby="difference-title">
           <h2 id="difference-title">Less uncertainty ≠ a better decision</h2>
@@ -72,6 +95,7 @@
             <div><span>Usable for this commitment</span><strong id="usable"></strong><small id="usable-caption"></small></div>
           </div>
           <p id="difference-copy" class="finding"></p>
+          <figure class="belief-figure" aria-labelledby="belief-title"><figcaption id="belief-title">Does the answer change which reservation is best?</figcaption><div id="belief-map"></div><p class="figure-note">One bus wins at or below 56.25% high-demand belief; three buses win above it. This isolates one survey, not the full sequential policy.</p></figure>
           <div id="single-branches" class="branch-pair"></div>
         </section>
       </div>
