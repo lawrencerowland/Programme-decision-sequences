@@ -1,6 +1,17 @@
 # Programme decision sequences
 
-Inspectable experiments in programme decisions under uncertainty: the original two-tab simulator plus a separate exact decision-tree essay.
+Inspectable experiments in programme decisions under uncertainty. [Browse all eight experiments](experiments.html): the original two-tab simulator, a separate exact decision-tree essay, and six maintained teaching companions. Each model retains its own assumptions and evidence status.
+
+## Decision experiments catalogue
+
+- [Project decision framing](apps/project-framing/): editable model worksheet.
+- [Two climate decision paths](apps/climate-decision-paths/): narrated path diagram, playback and SVG export.
+- [Climate policy simulator](apps/climate-policy-simulator/): seeded policy comparison, fixed world truth versus belief, paths, ribbons and R/I/B framing.
+- [Climate SDAM snapshot](apps/climate-sdam-report/): historical precomputed charts, Sankey and framing; unavailable generating solver and unverified coefficients.
+- [Weekly IT project game](apps/weekly-it-project-game/): hiring, constrained resource allocation, uncertain outcomes and decision history.
+- [IT project decision tutorial](apps/it-decision-tutorial/): six-step formulation guide; no executing solver.
+
+These companions were moved after their September repairs. Their maintained source, tests, provenance and rebuild instructions are documented in [the migration record](docs/decision-migration.md).
 
 ## New essay: evidence before commitment
 
@@ -55,11 +66,15 @@ The two February 2026 HTML files are retained unchanged under [`archive/original
 
 ## Checks
 
-Run the dependency-free smoke checks with:
+Install the locked toolchain and run all checks with Node 22 or later and pnpm 11.19.0:
 
 ```text
-npm test
+pnpm install --frozen-lockfile
+pnpm test
+pnpm run build:check
 ```
+
+The original specialist-model tests remain dependency-free. The full suite additionally tests the imported model, React interactions and migration routes. `pnpm run build` regenerates only the two React routes and their shared assets. The existing branch-based GitHub Pages arrangement remains unchanged; generated assets are checked in alongside maintained sources.
 
 The checks evaluate the model embedded in `index.html`: deterministic seeds, finite outputs, ramp-feasible decisions, four policy classes, path lengths and scenario-tree structure.
 

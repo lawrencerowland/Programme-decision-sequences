@@ -2,9 +2,29 @@
   "name": "programme-decision-sequences",
   "version": "0.1.0",
   "private": true,
-  "description": "A two-tab programme decision-sequence simulator and framing tool.",
+  "description": "Programme decision experiments: simulations, evidence, framing, path diagrams and IT teaching tools.",
   "scripts": {
-    "test": "node tests/smoke.mjs && node tests/evidence.cjs && node tests/evidence-visuals.cjs",
-    "test:browser": "node tests/browser.cjs"
+    "test": "node tests/smoke.mjs && node tests/evidence.cjs && node tests/evidence-visuals.cjs && node tests/decision-repairs-model.cjs && node tests/decision-migration.cjs && vitest run --config vite.react.config.mjs",
+    "test:browser": "node tests/browser.cjs",
+    "build": "node scripts/build-react.mjs",
+    "build:check": "node scripts/build-react.mjs --check",
+    "dev:react": "vite --config vite.react.config.mjs"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "web-vitals": "3.1.0"
+  },
+  "devDependencies": {
+    "vite": "6.2.7",
+    "@vitejs/plugin-react": "4.5.2",
+    "vitest": "3.0.7",
+    "jsdom": "22.1.0",
+    "@testing-library/react": "13.4.0",
+    "@testing-library/jest-dom": "5.16.5"
+  },
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Decision Framing Tool (Powell's Framework)</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        .container { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; background-color: #f9f9f9; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], textarea { width: 95%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 3px; }
+        textarea { min-height: 60px; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #0056b3; }
+        h2, h3 { color: #0056b3; }
+        .output { margin-top: 20px; padding: 15px; border: 1px dashed #007bff; background-color: #e7f3ff; }
+        .info-box { font-size: 0.9em; color: #555; margin-top: 5px; font-style: italic;}
+    </style>
+</head>
+<body>
+<p><a href="../../experiments.html">Back to decision experiments</a></p>
+
+<h1>Project Decision Framing Tool</h1>
+<p>This tool helps you structure a recurring project decision using Warren Powell’s five-element framework: state, decision, new information, transition and objective. <a href="https://warrenpowell.org/universal-modeling-framework/">Read the source framework</a>. This questionnaire organises your assumptions; it does not validate a model.</p>
+
+<div class="container">
+    <h2>1. Identify the Decision Context</h2>
+    <label for="decisionName">What is the recurring decision you need to make?</label>
+    <input type="text" id="decisionName" placeholder="e.g., Weekly resource allocation, Sprint scope adjustment, Risk response selection">
+
+    <label for="decisionFrequency">How often do you typically make this decision (Time Step 't')?</label>
+    <input type="text" id="decisionFrequency" placeholder="e.g., Daily, Weekly, Monthly, Quarterly, Per Sprint">
+</div>
+
+<div class="container">
+    <h2>2. Identify State (S<sub>t</sub>): Information Needed AT the Decision Point</h2>
+    <label for="statePhysical">Physical State (R<sub>t</sub>): What describes the tangible status of the project?</label>
+    <textarea id="statePhysical" placeholder="List items like: % tasks complete, budget spent, resources available, current schedule status..."></textarea>
+    <div class="info-box">Describe the resources and physical position known at decision time; estimates and unknown quantities belong in the information or belief description.</div>
+
+    <label for="stateInfo">Informational State (I<sub>t</sub>): What other known factors influence the decision?</label>
+    <textarea id="stateInfo" placeholder="List items like: Current market prices, weather forecast, stakeholder availability, known dependencies..."></textarea>
+    <div class="info-box">This is known information, not physical resources, that affects your choices or outcomes.</div>
+
+    <label for="stateBelief">Belief State (B<sub>t</sub>): What key factors are uncertain, requiring estimates or beliefs?</label>
+    <textarea id="stateBelief" placeholder="List items like: Estimate of task durations, probability of a risk occurring, forecast of user adoption, belief about team velocity..."></textarea>
+    <div class="info-box">This captures your knowledge about things you *don't* know perfectly.</div>
+
+    <label for="stateUncertaintyFocus">Which elements (from above) are most uncertain or lack sufficient information?</label>
+    <textarea id="stateUncertaintyFocus" placeholder="Focus on the key uncertainties you'd like to reduce."></textarea>
+</div>
+
+<div class="container">
+    <h2>3. Identify Decision Variables (x<sub>t</sub>): Choices Made</h2>
+    <label for="decisionActions">What specific actions/choices do you make?</label>
+    <textarea id="decisionActions" placeholder="List actions like: Assign team A to task X, approve budget Y, change priority of Z, select vendor P..."></textarea>
+
+    <label for="decisionConstraints">What constraints limit these actions?</label>
+    <textarea id="decisionConstraints" placeholder="e.g., Budget limits, resource availability, policy restrictions, deadlines..."></textarea>
+</div>
+
+<div class="container">
+    <h2>4. Identify Exogenous Information (W<sub>t+1</sub>): New Info Arriving AFTER Decision</h2>
+    <label for="exoInfo">What new, relevant information typically arrives *after* you make the decision but *before* the next one?</label>
+    <textarea id="exoInfo" placeholder="List items like: Actual task completion time, new risks identified, actual costs incurred, stakeholder feedback, market changes..."></textarea>
+    <div class="info-box">These observations and shocks are unknown when the current decision is chosen. Their distribution may depend on the state or action—for example, more monitoring can reduce measurement noise.</div>
+
+    <label for="exoInfoUncertainty">How does this new information (W<sub>t+1</sub>) help reduce the key uncertainties identified earlier?</label>
+    <textarea id="exoInfoUncertainty" placeholder="Connect the new information back to the Belief State uncertainties."></textarea>
+</div>
+
+<div class="container">
+    <h2>5. Describe the Transition (S<sup>M</sup>)</h2>
+    <label for="transition">How do the current state, chosen action and newly arriving information produce the next state?</label>
+    <textarea id="transition" placeholder="For each state item: what changes because of the action, what changes because of new information, and what remains unchanged? How are beliefs updated?"></textarea>
+    <div class="info-box">Write a rule or plain-language update: S_(t+1) = S^M(S_t, x_t, W_(t+1)). Distinguish an action’s intended effect from its observed outcome.</div>
+</div>
+
+<div class="container">
+    <h2>6. Identify Objective / Metrics</h2>
+    <label for="objective">How do you measure the success of this decision over time?</label>
+    <textarea id="objective" placeholder="e.g., Minimize schedule delay, maximize features delivered, stay within budget, maximize stakeholder satisfaction..."></textarea>
+</div>
+
+<div class="container">
+    <h2>7. Cadence Check</h2>
+    <label for="cadenceInfo">Does critical new information (W<sub>t+1</sub>) often arrive *much faster* than your decision frequency?</label>
+    <textarea id="cadenceInfo" placeholder="e.g., Daily market changes vs. monthly strategy review. Describe any mismatches."></textarea>
+
+    <label for="cadenceFeasibility">Consider the uncertainties you want to reduce (from Step 2). How feasible (time/cost) is it to get *better* information *before* your next decision point?</label>
+    <textarea id="cadenceFeasibility" placeholder="Is faster/better information realistic within your decision cycle?"></textarea>
+     <div class="info-box">Aligning decision frequency with the arrival and value of new information is key.</div>
+</div>
+
+<button onclick="generateSummary()">Generate Framework Summary</button>
+
+<div id="outputSummary" class="output" style="display:none;">
+    <h2>Sequential Decision Framework Summary</h2>
+    <p><strong>Decision Context:</strong> <span id="outDecisionName"></span> (Frequency: <span id="outDecisionFrequency"></span>)</p>
+    <h3>State (S<sub>t</sub>) - Information at Decision Time:</h3>
+    <ul>
+        <li><strong>Physical (R<sub>t</sub>):</strong> <span id="outStatePhysical"></span></li>
+        <li><strong>Informational (I<sub>t</sub>):</strong> <span id="outStateInfo"></span></li>
+        <li><strong>Belief (B<sub>t</sub>):</strong> <span id="outStateBelief"></span></li>
+        <li><em>Key Uncertainties:</em> <span id="outStateUncertaintyFocus"></span></li>
+    </ul>
+    <h3>Decision (x<sub>t</sub>) - Actions Taken:</h3>
+    <ul>
+        <li><strong>Actions:</strong> <span id="outDecisionActions"></span></li>
+        <li><strong>Constraints:</strong> <span id="outDecisionConstraints"></span></li>
+    </ul>
+    <h3>Exogenous Information (W<sub>t+1</sub>) - New Info Arriving After Decision:</h3>
+    <ul>
+        <li><strong>New Info:</strong> <span id="outExoInfo"></span></li>
+        <li><strong>Reduces Uncertainty On:</strong> <span id="outExoInfoUncertainty"></span></li>
+    </ul>
+    <h3>Transition to the Next State:</h3>
+    <p><span id="outTransition"></span></p>
+     <h3>Objective:</h3>
+    <p><span id="outObjective"></span></p>
+    <h3>Cadence Considerations:</h3>
+    <p><strong>Info Arrival vs Decision Frequency:</strong> <span id="outCadenceInfo"></span></p>
+    <p><strong>Feasibility of Better/Faster Info:</strong> <span id="outCadenceFeasibility"></span></p>
+
+    <h3>Next Steps & Focus:</h3>
+    <p>Based on this structure, focus on:</p>
+    <ol>
+        <li>Gathering the *right* state information (S<sub>t</sub>) before deciding.</li>
+        <li>Designing a policy/rule for making decision x<sub>t</sub> based on S<sub>t</sub>.</li>
+        <li>Actively seeking/monitoring the key Exogenous Information (W<sub>t+1</sub>) that reduces critical uncertainties.</li>
+        <li>Aligning the decision frequency with the information flow and the cost/benefit of getting better information.</li>
+    </ol>
+</div>
+
+<script>
+    function generateSummary() {
+        // Get values from inputs
+        document.getElementById('outDecisionName').textContent = document.getElementById('decisionName').value || 'N/A';
+        document.getElementById('outDecisionFrequency').textContent = document.getElementById('decisionFrequency').value || 'N/A';
+        document.getElementById('outStatePhysical').textContent = document.getElementById('statePhysical').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outStateInfo').textContent = document.getElementById('stateInfo').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outStateBelief').textContent = document.getElementById('stateBelief').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outStateUncertaintyFocus').textContent = document.getElementById('stateUncertaintyFocus').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outDecisionActions').textContent = document.getElementById('decisionActions').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outDecisionConstraints').textContent = document.getElementById('decisionConstraints').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outExoInfo').textContent = document.getElementById('exoInfo').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outExoInfoUncertainty').textContent = document.getElementById('exoInfoUncertainty').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outTransition').textContent = document.getElementById('transition').value.replace(/\n/g, '; ') || 'Not yet specified';
+        document.getElementById('outObjective').textContent = document.getElementById('objective').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outCadenceInfo').textContent = document.getElementById('cadenceInfo').value.replace(/\n/g, '; ') || 'N/A';
+        document.getElementById('outCadenceFeasibility').textContent = document.getElementById('cadenceFeasibility').value.replace(/\n/g, '; ') || 'N/A';
+
+        // Show the output section
+        document.getElementById('outputSummary').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
