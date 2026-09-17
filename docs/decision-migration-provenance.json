@@ -1,0 +1,76 @@
+{
+  "date": "2026-09-17",
+  "sources": {
+    "Project-web-apps": "a83541f0b872518601a772b3d311741a7bd7e945",
+    "React_proj-apps": "12957f34702676f166f09dbb625d5c671c6dbac8"
+  },
+  "apps": [
+    {
+      "kind": "static",
+      "original_repository": "Project-web-apps",
+      "original_path": "web_apps/Project_Decision_Framing_Tool.html",
+      "destination": "apps/project-framing/index.html",
+      "original_sha256": "2881a84c4c8a86f846df2084e03ab8f976ceb801ca5f4b207fd998c36361b9be",
+      "scripts_sha256": "52c1bfa2e6227d61e1fc2a93dd1b6b28e694dc5b933aac7c3ab4b6c4db640465",
+      "script_count": 1
+    },
+    {
+      "kind": "static",
+      "original_repository": "Project-web-apps",
+      "original_path": "web_apps/climate-sequential-decision-paths.html",
+      "destination": "apps/climate-decision-paths/index.html",
+      "original_sha256": "97e0ecc53ff7047cbc568fe46075a82a9c39ba7ac3ff6c85a1ac00af6ac45c6c",
+      "scripts_sha256": "d0da7a8345ddc3ccd31c306bf6d3a912056f5470cb5fe8abdd410d92661972cb",
+      "script_count": 1
+    },
+    {
+      "kind": "static",
+      "original_repository": "Project-web-apps",
+      "original_path": "web_apps/climate_megaproject_sdam.html",
+      "destination": "apps/climate-sdam-report/index.html",
+      "original_sha256": "fbefa44aa8af8d062c1fd4ee87cd8cba8d33a013940205351d21b094ace2860c",
+      "scripts_sha256": "4fc478b0119225dcbf78dc0950b6edd8b8d74031b74747415ca93501b9f89264",
+      "script_count": 11
+    },
+    {
+      "kind": "static",
+      "original_repository": "Project-web-apps",
+      "original_path": "web_apps/Sequential decisions.html",
+      "destination": "apps/climate-policy-simulator/index.html",
+      "original_sha256": "b9e9c635336873a664c000f21fec71a635f81a17ee57a9aa68f0aae4ba17647c",
+      "scripts_sha256": "6cf149427f5f8dd3bb2aa1cb7cc6860b92fbadcf15b0db52139c365318afb2e3",
+      "script_count": 2
+    },
+    {
+      "kind": "react",
+      "original_repository": "React_proj-apps",
+      "original_path": "apps/Another-IT-project-simulation/",
+      "destination": "apps/weekly-it-project-game/",
+      "maintained_source": "react-src/weekly-it-project-game/src",
+      "preserved_files": {
+        "App.css": "47856771143c3e610ba67117edb52a67cbdcd804c8c5d179a74037295b0abe19",
+        "model.test.js": "e3ad45fa8810cc1a297156581658f88f4459ca7158aea8b95fd6eb38d67a89a6",
+        "App.jsx": "bebd8db2a81cbb1b04defe22875cbf2bf0f9f4d5791a95a4049250f7fd5e54c6",
+        "model.js": "ddc235c8f2003af1e3a2ecf519c35b73e53a26e236a8e870e07026dce73aff65",
+        "App.test.jsx": "f4b96a3a85299d1121d35c5f25a919dda5bedd047630a063bfd5cc95d8b11358"
+      }
+    },
+    {
+      "kind": "react",
+      "original_repository": "React_proj-apps",
+      "original_path": "apps/IT-project-seq-decisions/",
+      "destination": "apps/it-decision-tutorial/",
+      "maintained_source": "react-src/it-decision-tutorial/src",
+      "preserved_files": {
+        "App.jsx": "12af3f126e0a7196254e518a075c89f1fc94b5dbd70b89bd288068dbfbe19186",
+        "App.test.jsx": "eaf14c7397b9cbfbaeac8c9c72fd83f7274def00e7ec76d36334371eae8f1864"
+      }
+    }
+  ],
+  "existing_model_scripts": {
+    "index.html": "9dab2cd1eeef4c8942c34fcbd9f71b2cc4ed741f491c7e85b65d5b268f857033",
+    "evidence-model.js": "71e5f7d7297f2b2773ff444e427a6dd665a7134347e1ec5d4ef9badc24a6a707",
+    "evidence-ui.js": "ee5e37967cf8d09ffbf1dba7a4f891cce87371865bfb6d06ec92d64bd213f35b",
+    "evidence-visuals.js": "1da78caa70a9dc31b6f33f9eaa15ee8dc37b810b717dfc0fc5a4cdf97725ce56"
+  }
+}

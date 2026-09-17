@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sequential Decision Paths — Climate Engineering Mega Project (2028, t=0..4)</title>
+  <style>
+    :root{
+      --bg: #0b1220;
+      --panel: #101a30;
+      --panel2:#0f1730;
+      --text: #e8eefc;
+      --muted: #a9b6d6;
+      --grid: rgba(255,255,255,0.10);
+
+      /* three required colours */
+      --state: #2563eb;   /* blue */
+      --decision:#f59e0b; /* amber */
+      --info: #10b981;    /* green */
+
+      --stroke: rgba(255,255,255,0.18);
+      --stroke2: rgba(255,255,255,0.28);
+      --shadow: rgba(0,0,0,0.35);
+
+      --ok: #22c55e;
+      --warn: #fbbf24;
+      --bad: #ef4444;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; background: radial-gradient(1200px 800px at 30% 0%, #152046 0%, var(--bg) 55%); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
+    a{ color:#b7d2ff; text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+    code, pre{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: clamp(14px, 2.6vw, 26px);
+      display:flex;
+      flex-direction: column;
+      gap: clamp(10px, 1.8vw, 18px);
+    }
+
+    header{
+      display:flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .titleRow{
+      display:flex;
+      gap: 10px;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    h1{
+      font-size: clamp(18px, 2.3vw, 28px);
+      margin:0;
+      letter-spacing: 0.2px;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 74ch;
+      font-size: clamp(12.5px, 1.5vw, 14.5px);
+    }
+
+    .badgeRow{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12.5px;
+      user-select:none;
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+    .dot{ width:10px; height:10px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,0.25) inset; }
+
+    .dot.state{ background: var(--state); }
+    .dot.decision{ background: var(--decision); }
+    .dot.info{ background: var(--info); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: clamp(10px, 1.8vw, 18px);
+      align-items: stretch;
+    }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .badgeRow{ justify-content:flex-start; }
+    }
+
+    .card{
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+      border-radius: 14px;
+      overflow:hidden;
+      box-shadow: 0 18px 40px var(--shadow);
+    }
+    .cardHeader{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--stroke);
+      display:flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0));
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size: 14.5px;
+      letter-spacing: 0.2px;
+      color: #dbe6ff;
+    }
+    .cardBody{
+      padding: 14px;
+    }
+
+    .min-h-64{ min-height: 16rem; } /* required */
+    .diagramShell{
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .diagramStage{
+      width: 100%;
+      height: clamp(340px, 55vh, 560px);
+      display:block;
+      background:
+        radial-gradient(700px 420px at 25% 10%, rgba(37,99,235,0.12) 0%, rgba(37,99,235,0) 55%),
+        radial-gradient(620px 460px at 80% 15%, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0) 55%),
+        radial-gradient(520px 420px at 65% 85%, rgba(245,158,11,0.10) 0%, rgba(245,158,11,0) 55%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border-top: 1px solid var(--stroke);
+    }
+
+    .controls{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-top: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));
+    }
+    .controls .left, .controls .right{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn, .select, .toggle{
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.18);
+      color: var(--text);
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, border-color .12s ease, background .12s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn:hover, .select:hover, .toggle:hover{ border-color: var(--stroke2); background: rgba(0,0,0,0.24); }
+    .btn[aria-pressed="true"]{ border-color: rgba(255,255,255,0.40); background: rgba(255,255,255,0.08); }
+
+    select.select{
+      padding: 8px 10px;
+      min-width: 180px;
+      outline:none;
+    }
+
+    .toggle input{ accent-color: #fff; }
+    .toggle label{ cursor:pointer; }
+    .toggle{
+      padding: 8px 10px;
+      gap: 10px;
+    }
+
+    .kpiRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 980px){
+      .kpiRow{ grid-template-columns: 1fr; }
+    }
+    .kpi{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.14);
+    }
+    .kpi h3{
+      margin: 0 0 6px 0;
+      font-size: 13px;
+      color: #dbe6ff;
+    }
+    .kpi p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .detailTitle{
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap:10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,0.18);
+      color: var(--muted);
+      font-size: 12.5px;
+      user-select:none;
+      white-space: nowrap;
+    }
+    .chip strong{ color: var(--text); font-weight: 650; }
+    .chip .miniDot{ width:10px; height:10px; border-radius:999px; background:#fff; }
+    .miniDot.state{ background: var(--state); }
+    .miniDot.decision{ background: var(--decision); }
+    .miniDot.info{ background: var(--info); }
+
+    .detailBody{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .detailBody p{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13.5px;
+    }
+    .detailBody ul{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 13.5px;
+    }
+    .detailBody li{ margin: 4px 0; }
+
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12.5px;
+      color: #d6e4ff;
+      background: rgba(0,0,0,0.24);
+      border: 1px solid var(--stroke);
+      border-radius: 12px;
+      padding: 10px 12px;
+      overflow:auto;
+      line-height: 1.5;
+    }
+
+    .callout{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.14);
+      color: var(--muted);
+      font-size: 13.2px;
+      line-height: 1.5;
+    }
+
+    .sources{
+      font-size: 12.8px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .sources ul{ margin: 8px 0 0 0; padding-left: 18px; }
+    .sources li{ margin: 6px 0; }
+
+    /* Toast */
+    .toastHost{
+      position: fixed;
+      inset: auto 0 16px 0;
+      display:flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 9999;
+      padding: 0 14px;
+    }
+    .toast{
+      pointer-events: auto;
+      max-width: min(740px, 92vw);
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.78);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+      color: var(--text);
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+    }
+    .toast .ico{
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content: center;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+    .toast .msg{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .toast .msg strong{ color: var(--text); }
+
+    /* SVG styles */
+    svg{ width:100%; height:100%; display:block; }
+    .node rect{
+      rx: 10; ry: 10;
+      stroke: rgba(255,255,255,0.26);
+      stroke-width: 1.2;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.38));
+    }
+    .node text{
+      font-size: 12px;
+      fill: rgba(255,255,255,0.92);
+      font-weight: 650;
+      letter-spacing: 0.1px;
+      user-select:none;
+      pointer-events: none;
+    }
+    .node .sub{
+      font-size: 11px;
+      fill: rgba(255,255,255,0.78);
+      font-weight: 520;
+    }
+    .node.state rect{ fill: rgba(37,99,235,0.26); stroke: rgba(37,99,235,0.75); }
+    .node.decision rect{ fill: rgba(245,158,11,0.22); stroke: rgba(245,158,11,0.75); }
+    .node.info rect{ fill: rgba(16,185,129,0.22); stroke: rgba(16,185,129,0.75); }
+
+    .node:hover rect{ stroke: rgba(255,255,255,0.55); }
+    .node.selected rect{ stroke: rgba(255,255,255,0.85); stroke-width: 1.8; }
+    .node.dim{ opacity: 0.25; }
+
+    .edge{
+      stroke: rgba(255,255,255,0.26);
+      stroke-width: 1.2;
+      fill: none;
+      marker-end: url(#arrow);
+    }
+    .edge.pathA{ stroke: rgba(37,99,235,0.35); }
+    .edge.pathB{ stroke: rgba(16,185,129,0.30); }
+    .edge.active{
+      stroke: rgba(255,255,255,0.85);
+      stroke-width: 2.2;
+    }
+
+    .label{
+      font-size: 12px;
+      fill: rgba(255,255,255,0.78);
+      font-weight: 650;
+      letter-spacing: 0.15px;
+      user-select:none;
+    }
+    .rowLabel{
+      font-size: 12px;
+      fill: rgba(255,255,255,0.72);
+      font-weight: 650;
+    }
+    .divider{
+      stroke: rgba(255,255,255,0.10);
+      stroke-width: 1;
+    }
+
+    .help{
+      color: var(--muted);
+      font-size: 12.8px;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    .srOnly{
+      position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden;
+    }
+  </style>
+</head>
+<body>
+  <nav aria-label="Decision collection" style="padding:12px 20px"><a href="../../experiments.html">← All decision experiments</a> · <a href="../../index.html">Sequence and belief lab</a></nav>
+  <div class="wrap">
+    <header>
+      <div class="titleRow">
+        <div>
+          <h1>Two branching event paths (t=0..4) for a climate engineering mega‑project</h1>
+          <p class="subtitle">
+            A worked example of Powell’s “state → decision → new information” sequence (S<sub>t</sub>, x<sub>t</sub>, W<sub>t+1</sub>) with a split caused by two different readings of global average temperature in 2028.
+            This is a modelling illustration, not a deployment recommendation.
+          </p>
+        </div>
+        <div class="badgeRow" aria-label="Legend">
+          <span class="pill"><span class="dot state"></span>State (S)</span>
+          <span class="pill"><span class="dot decision"></span>Decision (x)</span>
+          <span class="pill"><span class="dot info"></span>Information (W)</span>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Setup:</strong> We treat each t as a quarter. Managers decide scope (x<sub>t</sub>), then observe new exogenous information (W<sub>t+1</sub>)—including updated global mean temperature estimates from monitoring products—updating the next state S<sub>t+1</sub>.
+        The branching happens at W<sub>1</sub>: two different 2028 temperature readings imply different urgency and governance trajectories.
+      </div>
+    </header>
+
+    <section class="grid">
+      <!-- Diagram -->
+      <div class="card diagramShell min-h-64" id="app" data-timeout="3000">
+        <div class="cardHeader">
+          <h2>Diagram: (S0, x0, W1, S1, x1, W2, S2, x2, W3, S3, x3, W4, S4) — two sample paths</h2>
+          <div class="help">Tap a node for details. Use “Focus path” to step through a single trajectory.</div>
+        </div>
+
+        <div class="diagramStage" id="stage" role="img" aria-label="Sequential decision diagram with branching paths">
+          <noscript>
+            Interactive visualisation (JavaScript required). Static fallback: states (blue), decisions (amber), information (green).
+          </noscript>
+
+          <!-- Static fallback (shown only if JS fails) -->
+          <div id="staticFallback" style="display:none; padding:14px;">
+            <div class="callout">
+              Interactive diagram failed to load. Here is a static summary:
+              <div class="mono" style="margin-top:10px;">
+                Path A (hot 2028 reading): S0 → x0 → W1(hot) → S1A → x1A → W2A → S2A → x2A → W3A → S3A → x3A → W4A → S4A<br/>
+                Path B (mild 2028 reading): S0 → x0 → W1(mild) → S1B → x1B → W2B → S2B → x2B → W3B → S3B → x3B → W4B → S4B
+              </div>
+            </div>
+          </div>
+
+          <!-- SVG mounts here -->
+          <div id="svgMount" style="height:100%;"></div>
+        </div>
+
+        <div class="controls" aria-label="Controls">
+          <div class="left">
+            <button class="btn" id="btnShowBoth" aria-pressed="true" title="Show both paths">Show both</button>
+            <button class="btn" id="btnShowA" aria-pressed="false" title="Show only Path A">Only Path A</button>
+            <button class="btn" id="btnShowB" aria-pressed="false" title="Show only Path B">Only Path B</button>
+            <button class="btn" id="btnClear" aria-pressed="false" title="Clear selection">Clear selection</button>
+          </div>
+          <div class="right">
+            <select class="select" id="focusSelect" title="Pick a path to step through">
+              <option value="A">Focus path: A (W1 hotter)</option>
+              <option value="B">Focus path: B (W1 milder)</option>
+            </select>
+            <button class="btn" id="btnStepBack" title="Step back">◀ Step</button>
+            <button class="btn" id="btnStep" title="Step forward">Step ▶</button>
+            <button class="btn" id="btnPlay" aria-pressed="false" title="Play / pause">Play</button>
+            <button class="btn" id="btnDownload" title="Download current diagram as SVG">Download SVG</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details + mapping -->
+      <div class="card">
+        <div class="cardHeader">
+          <h2>Node details (click/tap a box)</h2>
+          <span class="chip" id="selectedChip"><span class="miniDot state"></span><strong>None</strong><span>—</span></span>
+        </div>
+        <div class="cardBody">
+          <div class="detailBody" id="detailBody">
+            <p>
+              This worked example follows the sequence (S0, x0, W1, S1, x1, W2, …, ST) used to model sequential decision problems  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a> and explained in Powell’s SDAM text  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a>.
+              Tap any state/decision/information node to see a plain‑English breakdown.
+            </p>
+
+            <div class="kpiRow">
+              <div class="kpi">
+                <h3>State (S<sub>t</sub>) = “what we know now”</h3>
+                <p>
+                  Use a compact state that is sufficient to decide and simulate forward. A helpful decomposition is:
+                  physical resources R<sub>t</sub>, other deterministic info I<sub>t</sub> (e.g., the current temperature), and beliefs B<sub>t</sub> about uncertain parameters  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a>  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a>.
+                </p>
+              </div>
+              <div class="kpi">
+                <h3>Exogenous info (W<sub>t+1</sub>) = “what arrives after we decide”</h3>
+                <p>
+                  W<sub>t+1</sub> is not known when x<sub>t</sub> is chosen and arrives after it; its distribution may depend on the state or chosen monitoring—for example, updated temperature estimates or field‑test observations  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a>.
+                </p>
+              </div>
+            </div>
+
+            <div class="mono" id="pathStrings" aria-label="Path sequences">
+Path A (hot 2028 reading):
+(S0, x0, W1ᵃ, S1ᵃ, x1ᵃ, W2ᵃ, S2ᵃ, x2ᵃ, W3ᵃ, S3ᵃ, x3ᵃ, W4ᵃ, S4ᵃ)
+
+Path B (milder 2028 reading):
+(S0, x0, W1ᵇ, S1ᵇ, x1ᵇ, W2ᵇ, S2ᵇ, x2ᵇ, W3ᵇ, S3ᵇ, x3ᵇ, W4ᵇ, S4ᵇ)
+            </div>
+
+            <div class="callout">
+              <strong>Real‑world anchors used in the descriptors:</strong>
+              monitoring products (e.g., NASA GISTEMP and HadCRUT5), plus real SRM research programmes that inform the kinds of activities you might see in “R&amp;D / pilot” states (e.g., UW’s Marine Cloud Brightening research programme, and the now‑ended SCoPEx effort).
+              See sources at the bottom.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardHeader">
+        <h2 id="public-sources">Sources (framework and real-world references)</h2>
+      </div>
+      <div class="cardBody sources">
+        <div>
+          <strong>Framework (Powell / SDA):</strong>
+          <ul>
+            <li>Sequential decision sequence and definitions of S<sub>t</sub>, x<sub>t</sub>, W<sub>t+1</sub>  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a>  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a></li>
+            <li>State decomposition into R<sub>t</sub>, I<sub>t</sub> (including “current temperature”), and belief state B<sub>t</sub>  <a href="https://warrenpowell.org/statevariables/">Powell: state variables</a>  <a href="https://warrenpowell.org/universal-modeling-framework/">Powell: model framework</a></li>
+          </ul>
+        </div>
+        <div style="margin-top:10px;">
+          <strong>Climate monitoring + example climate engineering projects:</strong>
+          <ul>
+            <li>NASA GISTEMP: global surface temperature change estimate (dataset description)  <a href="https://data.giss.nasa.gov/gistemp/">data.giss.nasa.gov</a></li>
+            <li>HadCRUT5: global temperature anomaly dataset description (Met Office)  <a href="https://www.metoffice.gov.uk/hadobs/hadcrut5/">Met Office</a></li>
+            <li>Copernicus climate indicators / temperature information used as an example monitoring stream  <a href="https://climate.copernicus.eu/climate-indicators/temperature">climate.copernicus.eu</a></li>
+            <li>UW Marine Cloud Brightening research programme overview  <a href="https://atmos.uw.edu/faculty-and-research/marine-cloud-brightening-program/">atmos.uw.edu</a></li>
+            <li>SCoPEx ended in March 2024 (Harvard SGRP)  <a href="https://salatainstitute.harvard.edu/research-initiatives/the-harvard-solar-geoengineering-research-program/">The Salata Institute</a></li>
+          </ul>
+        </div>
+        <div class="help" style="margin-top:8px;">
+          Note: The 2028 “temperature readings” in the two paths are hypothetical scenario inputs (W1ᵃ vs W1ᵇ) meant to illustrate how different exogenous information leads to different decisions and states, not a claim about real 2028 outcomes.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="toastHost" id="toastHost" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    (function(){
+      const APP = document.getElementById('app');
+      const stage = document.getElementById('stage');
+      const svgMount = document.getElementById('svgMount');
+      const fallbackBox = document.getElementById('staticFallback');
+      const detailBody = document.getElementById('detailBody');
+      const selectedChip = document.getElementById('selectedChip');
+
+      const btnShowBoth = document.getElementById('btnShowBoth');
+      const btnShowA = document.getElementById('btnShowA');
+      const btnShowB = document.getElementById('btnShowB');
+      const btnClear = document.getElementById('btnClear');
+      const focusSelect = document.getElementById('focusSelect');
+      const btnStep = document.getElementById('btnStep');
+      const btnStepBack = document.getElementById('btnStepBack');
+      const btnPlay = document.getElementById('btnPlay');
+      const btnDownload = document.getElementById('btnDownload');
+
+      // ---- Toast ----
+      function toast(title, message, tone){
+        const host = document.getElementById('toastHost');
+        const el = document.createElement('div');
+        el.className = 'toast';
+        const icon = document.createElement('div');
+        icon.className = 'ico';
+        icon.textContent = tone === 'error' ? '!' : (tone === 'warn' ? '⚠' : '✓');
+
+        const msg = document.createElement('div');
+        msg.className = 'msg';
+        msg.innerHTML = `<strong>${escapeHtml(title)}</strong><br>${escapeHtml(message)}`;
+        el.appendChild(icon);
+        el.appendChild(msg);
+        host.appendChild(el);
+        setTimeout(()=>{ el.style.opacity = '0'; el.style.transform = 'translateY(6px)'; }, 3200);
+        setTimeout(()=>{ el.remove(); }, 3800);
+      }
+
+      function escapeHtml(str){
+        return String(str).replace(/[&<>"']/g, s => ({
+          '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+        }[s]));
+      }
+
+      function fallback(reason){
+        console.error('Fallback:', reason);
+        try{
+          fallbackBox.style.display = 'block';
+          svgMount.innerHTML = '';
+          toast('Fallback mode', 'Interactive diagram could not be initialised. Showing static summary.', 'warn');
+          window.__canvasStatus = 'fallback';
+        }catch(e){
+          console.error('Fallback failed:', e);
+          window.__canvasStatus = 'error';
+        }
+      }
+
+      // ---- Data model ----
+      // Layout in SVG viewBox coordinates
+      const VB = { w: 1400, h: 520 };
+      const colX = (c) => 60 + c * 105;
+      const ROW = { common: 260, A: 170, B: 350 };
+
+      const dims = { w: 92, h: 54 };
+
+      const TYPES = {
+        state: { key:'state', colorVar:'--state' },
+        decision: { key:'decision', colorVar:'--decision' },
+        info: { key:'info', colorVar:'--info' }
+      };
+
+      const nodes = [
+        // Common trunk
+        mkNode('S0', 'state', 0, 'S0', '2028‑Q1', 'Baseline programme state', ROW.common),
+        mkNode('x0', 'decision', 1, 'x0', 'Q1', 'Set initial scope', ROW.common),
+
+        // Branching W1 (two realizations)
+        mkNode('W1a', 'info', 2, 'W1ᵃ', '2028', 'Temp reading: hotter', ROW.A),
+        mkNode('W1b', 'info', 2, 'W1ᵇ', '2028', 'Temp reading: milder', ROW.B),
+
+        // Path A (hotter reading)
+        mkNode('S1a', 'state',   3, 'S1ᵃ', '2028‑Q2', 'Urgency & pressure rise', ROW.A),
+        mkNode('x1a', 'decision',4, 'x1ᵃ', 'Q2',     'Fast‑track R&D + governance', ROW.A),
+        mkNode('W2a', 'info',    5, 'W2ᵃ', 'Q2 obs', 'Field + political signals', ROW.A),
+        mkNode('S2a', 'state',   6, 'S2ᵃ', '2028‑Q3', 'Pilot‑ready, guarded', ROW.A),
+        mkNode('x2a', 'decision',7, 'x2ᵃ', 'Q3',     'Go/No‑go limited pilot', ROW.A),
+        mkNode('W3a', 'info',    8, 'W3ᵃ', 'Q3 obs', 'Side‑effects / efficacy', ROW.A),
+        mkNode('S3a', 'state',   9, 'S3ᵃ', '2028‑Q4', 'Guardrails tighten', ROW.A),
+        mkNode('x3a', 'decision',10,'x3ᵃ', 'Q4',     'Scale w/ stop rules', ROW.A),
+        mkNode('W4a', 'info',    11,'W4ᵃ', 'Q4 obs', 'Outcome audit', ROW.A),
+        mkNode('S4a', 'state',   12,'S4ᵃ', 't=4',    '2029‑Q1: Stabilised plan', ROW.A),
+
+        // Path B (milder reading)
+        mkNode('S1b', 'state',   3, 'S1ᵇ', '2028‑Q2', 'More time, governance first', ROW.B),
+        mkNode('x1b', 'decision',4, 'x1ᵇ', 'Q2',     'Double‑down on MRV + CDR', ROW.B),
+        mkNode('W2b', 'info',    5, 'W2ᵇ', 'Q2 obs', 'Monitoring + lab results', ROW.B),
+        mkNode('S2b', 'state',   6, 'S2ᵇ', '2028‑Q3', 'Validated models, calmer politics', ROW.B),
+        mkNode('x2b', 'decision',7, 'x2ᵇ', 'Q3',     'Conditional pilot trigger', ROW.B),
+        mkNode('W3b', 'info',    8, 'W3ᵇ', 'Q3 obs', 'Trend update + capacity', ROW.B),
+        mkNode('S3b', 'state',   9, 'S3ᵇ', '2028‑Q4', 'Ready, still cautious', ROW.B),
+        mkNode('x3b', 'decision',10,'x3ᵇ', 'Q4',     'Stay in research / scale CDR', ROW.B),
+        mkNode('W4b', 'info',    11,'W4ᵇ', 'Q4 obs', 'Independent review', ROW.B),
+        mkNode('S4b', 'state',   12,'S4ᵇ', 't=4',    '2029‑Q1: Phased roadmap', ROW.B),
+      ];
+
+      const edges = [
+        // Common
+        mkEdge('S0', 'x0', 'common'),
+        // Branch to W1a/W1b
+        mkEdge('x0', 'W1a', 'A', true),
+        mkEdge('x0', 'W1b', 'B', true),
+
+        // Path A
+        mkEdge('W1a', 'S1a', 'A'),
+        mkEdge('S1a', 'x1a', 'A'),
+        mkEdge('x1a', 'W2a', 'A'),
+        mkEdge('W2a', 'S2a', 'A'),
+        mkEdge('S2a', 'x2a', 'A'),
+        mkEdge('x2a', 'W3a', 'A'),
+        mkEdge('W3a', 'S3a', 'A'),
+        mkEdge('S3a', 'x3a', 'A'),
+        mkEdge('x3a', 'W4a', 'A'),
+        mkEdge('W4a', 'S4a', 'A'),
+
+        // Path B
+        mkEdge('W1b', 'S1b', 'B'),
+        mkEdge('S1b', 'x1b', 'B'),
+        mkEdge('x1b', 'W2b', 'B'),
+        mkEdge('W2b', 'S2b', 'B'),
+        mkEdge('S2b', 'x2b', 'B'),
+        mkEdge('x2b', 'W3b', 'B'),
+        mkEdge('W3b', 'S3b', 'B'),
+        mkEdge('S3b', 'x3b', 'B'),
+        mkEdge('x3b', 'W4b', 'B'),
+        mkEdge('W4b', 'S4b', 'B'),
+      ];
+
+      const details = buildDetails();
+
+      // ---- State ----
+      let svgEl = null;
+      let selection = null;      // node id
+      let showMode = 'both';     // both | A | B
+      let focusPath = 'A';       // A | B
+      let stepIndex = 0;         // index in focusPathNodes
+      let playTimer = null;
+
+      const focusNodes = {
+        A: ['S0','x0','W1a','S1a','x1a','W2a','S2a','x2a','W3a','S3a','x3a','W4a','S4a'],
+        B: ['S0','x0','W1b','S1b','x1b','W2b','S2b','x2b','W3b','S3b','x3b','W4b','S4b'],
+      };
+
+      // ---- Init ----
+      function init(){
+        svgEl = renderSvg();
+        svgMount.innerHTML = '';
+        svgMount.appendChild(svgEl);
+
+        wireControls();
+        applyShowMode();
+        selectNode('S0', true);
+        setFocusPath(focusPath);
+        markReady();
+
+        toast('Ready', 'Tap nodes to explore the two event paths. The split is at W1 (2028 temperature reading).', 'ok');
+      }
+
+      function markReady(){
+        APP.setAttribute('data-smoke', 'ok'); // required
+        window.__canvasStatus = 'ready';
+      }
+
+      // ---- Rendering ----
+      function renderSvg(){
+        const ns = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(ns, 'svg');
+        svg.setAttribute('viewBox', `0 0 ${VB.w} ${VB.h}`);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+        // defs: arrow
+        const defs = document.createElementNS(ns,'defs');
+        const marker = document.createElementNS(ns,'marker');
+        marker.setAttribute('id','arrow');
+        marker.setAttribute('viewBox','0 0 10 10');
+        marker.setAttribute('refX','9');
+        marker.setAttribute('refY','5');
+        marker.setAttribute('markerWidth','7');
+        marker.setAttribute('markerHeight','7');
+        marker.setAttribute('orient','auto-start-reverse');
+        const arrowPath = document.createElementNS(ns,'path');
+        arrowPath.setAttribute('d','M 0 0 L 10 5 L 0 10 z');
+        arrowPath.setAttribute('fill','rgba(255,255,255,0.40)');
+        marker.appendChild(arrowPath);
+        defs.appendChild(marker);
+        svg.appendChild(defs);
+
+        // background grid lines
+        svg.appendChild(line(ns, 0, 90, VB.w, 90, 'divider'));
+        svg.appendChild(line(ns, 0, 260, VB.w, 260, 'divider'));
+        svg.appendChild(line(ns, 0, 430, VB.w, 430, 'divider'));
+
+        // timeline labels
+        const tl = document.createElementNS(ns,'g');
+        const cols = [
+          {c:0, t:'t=0',  label:'S0'},
+          {c:2, t:'t=1',  label:'W1'},
+          {c:6, t:'t=2',  label:'S2'},
+          {c:9, t:'t=3',  label:'S3'},
+          {c:12,t:'t=4',  label:'S4'},
+        ];
+        cols.forEach(o=>{
+          const x = colX(o.c) + dims.w/2;
+          const y = 40;
+          const tx = document.createElementNS(ns,'text');
+          tx.setAttribute('x', x);
+          tx.setAttribute('y', y);
+          tx.setAttribute('text-anchor','middle');
+          tx.setAttribute('class','label');
+          tx.textContent = `${o.t}`;
+          const tx2 = document.createElementNS(ns,'text');
+          tx2.setAttribute('x', x);
+          tx2.setAttribute('y', y+18);
+          tx2.setAttribute('text-anchor','middle');
+          tx2.setAttribute('class','label');
+          tx2.setAttribute('opacity','0.75');
+          tx2.textContent = o.label;
+          tl.appendChild(tx);
+          tl.appendChild(tx2);
+        });
+        svg.appendChild(tl);
+
+        // row labels
+        const rl = document.createElementNS(ns,'g');
+        const rA = document.createElementNS(ns,'text');
+        rA.setAttribute('x', 18);
+        rA.setAttribute('y', ROW.A - 70);
+        rA.setAttribute('class','rowLabel');
+        rA.textContent = 'Path A: W1 hotter‑than‑expected (2028)';
+        const rB = document.createElementNS(ns,'text');
+        rB.setAttribute('x', 18);
+        rB.setAttribute('y', ROW.B - 70);
+        rB.setAttribute('class','rowLabel');
+        rB.textContent = 'Path B: W1 milder / near‑track (2028)';
+        rl.appendChild(rA);
+        rl.appendChild(rB);
+        svg.appendChild(rl);
+
+        // edges first (under nodes)
+        const edgeLayer = document.createElementNS(ns,'g');
+        edgeLayer.setAttribute('id','edgeLayer');
+        edges.forEach(e=>{
+          const from = findNode(e.from);
+          const to = findNode(e.to);
+          const p = edgePath(from, to, e.isBranch);
+          const path = document.createElementNS(ns,'path');
+          path.setAttribute('d', p);
+          path.setAttribute('class', `edge ${e.kind==='A'?'pathA':(e.kind==='B'?'pathB':'')}`);
+          path.setAttribute('data-edge', `${e.from}->${e.to}`);
+          path.setAttribute('data-kind', e.kind);
+          edgeLayer.appendChild(path);
+        });
+        svg.appendChild(edgeLayer);
+
+        // nodes layer
+        const nodeLayer = document.createElementNS(ns,'g');
+        nodeLayer.setAttribute('id','nodeLayer');
+        nodes.forEach(n=>{
+          const g = document.createElementNS(ns,'g');
+          g.setAttribute('class', `node ${n.type}`);
+          g.setAttribute('transform', `translate(${n.x}, ${n.y})`);
+          g.setAttribute('tabindex','0');
+          g.setAttribute('role','button');
+          g.setAttribute('aria-label', `${n.id}: ${n.title} ${n.subtitle} ${n.short}`);
+          g.setAttribute('data-node', n.id);
+          g.style.cursor = 'pointer';
+
+          const r = document.createElementNS(ns,'rect');
+          r.setAttribute('width', dims.w);
+          r.setAttribute('height', dims.h);
+          g.appendChild(r);
+
+          const t = document.createElementNS(ns,'text');
+          t.setAttribute('x', dims.w/2);
+          t.setAttribute('y', 20);
+          t.setAttribute('text-anchor','middle');
+          t.textContent = n.title;
+
+          const sub = document.createElementNS(ns,'text');
+          sub.setAttribute('x', dims.w/2);
+          sub.setAttribute('y', 36);
+          sub.setAttribute('text-anchor','middle');
+          sub.setAttribute('class','sub');
+          sub.textContent = n.subtitle;
+
+          const sub2 = document.createElementNS(ns,'text');
+          sub2.setAttribute('x', dims.w/2);
+          sub2.setAttribute('y', 50);
+          sub2.setAttribute('text-anchor','middle');
+          sub2.setAttribute('class','sub');
+          sub2.setAttribute('opacity','0.88');
+          sub2.textContent = n.short;
+
+          g.appendChild(t);
+          g.appendChild(sub);
+          g.appendChild(sub2);
+
+          // click + key
+          g.addEventListener('click', ()=>selectNode(n.id));
+          g.addEventListener('keydown', (ev)=>{
+            if(ev.key === 'Enter' || ev.key === ' '){
+              ev.preventDefault();
+              selectNode(n.id);
+            }
+          });
+
+          nodeLayer.appendChild(g);
+        });
+        svg.appendChild(nodeLayer);
+
+        // light dividers between A and B lanes
+        svg.appendChild(line(ns, 0, (ROW.A+ROW.B)/2, VB.w, (ROW.A+ROW.B)/2, 'divider'));
+
+        return svg;
+      }
+
+      function line(ns, x1,y1,x2,y2, cls){
+        const l = document.createElementNS(ns,'line');
+        l.setAttribute('x1',x1); l.setAttribute('y1',y1);
+        l.setAttribute('x2',x2); l.setAttribute('y2',y2);
+        l.setAttribute('class', cls);
+        return l;
+      }
+
+      function edgePath(from, to, isBranch){
+        const x1 = from.x + dims.w;
+        const y1 = from.y + dims.h/2;
+        const x2 = to.x;
+        const y2 = to.y + dims.h/2;
+
+        if(isBranch){
+          const mx = (x1 + x2)/2;
+          const cy = y1 + (y2 - y1)*0.55;
+          return `M ${x1} ${y1} Q ${mx} ${cy} ${x2} ${y2}`;
+        }
+        const mx = (x1 + x2)/2;
+        return `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      }
+
+      function mkNode(id, type, col, title, subtitle, short, y){
+        return {
+          id,
+          type,
+          col,
+          x: colX(col),
+          y: y - dims.h/2,
+          title,
+          subtitle,
+          short
+        };
+      }
+
+      function mkEdge(from, to, kind, isBranch=false){
+        return { from, to, kind, isBranch };
+      }
+
+      function findNode(id){
+        const n = nodes.find(x=>x.id===id);
+        if(!n) throw new Error('Unknown node: '+id);
+        return n;
+      }
+
+      // ---- Interaction ----
+      function selectNode(id, silent){
+        selection = id;
+
+        // Update node styling
+        const nodeEls = svgEl.querySelectorAll('[data-node]');
+        nodeEls.forEach(el=>{
+          el.classList.toggle('selected', el.getAttribute('data-node') === id);
+        });
+
+        // Update edge styling if stepping
+        updateActiveEdges();
+
+        // Dim nodes depending on show mode
+        applyShowMode();
+
+        // Update detail panel
+        renderDetail(id);
+
+        if(!silent) toast('Selected', `${id} details shown on the right.`, 'ok');
+      }
+
+      function clearSelection(){
+        selection = null;
+        const nodeEls = svgEl.querySelectorAll('[data-node]');
+        nodeEls.forEach(el=>el.classList.remove('selected'));
+        const edgeEls = svgEl.querySelectorAll('[data-edge]');
+        edgeEls.forEach(el=>el.classList.remove('active'));
+        selectedChip.innerHTML = `<span class="miniDot state"></span><strong>None</strong><span>—</span>`;
+        detailBody.innerHTML = `
+          <p>Select a node in the diagram to see details.</p>
+          <div class="mono">Tip: click W1ᵃ or W1ᵇ to see the two different 2028 temperature readings that cause the branching.</div>
+        `;
+      }
+
+      function renderDetail(id){
+        const d = details[id];
+        if(!d){
+          selectedChip.innerHTML = `<span class="miniDot state"></span><strong>${escapeHtml(id)}</strong><span>—</span>`;
+          detailBody.innerHTML = `<p>No details found.</p>`;
+          return;
+        }
+
+        const dotClass = d.type;
+        selectedChip.innerHTML = `<span class="miniDot ${dotClass}"></span><strong>${escapeHtml(d.title)}</strong><span>${escapeHtml(d.when)}</span>`;
+
+        const bullets = d.bullets.map(b=>`<li>${escapeHtml(b)}</li>`).join('');
+        const notes = d.notes ? `<div class="callout">${escapeHtml(d.notes)} <a href="#public-sources">Public sources</a></div>` : '';
+
+        detailBody.innerHTML = `
+          <div class="detailTitle">
+            <span class="chip"><span class="miniDot ${dotClass}"></span><strong>${escapeHtml(d.id)}</strong><span>${escapeHtml(d.kind)}</span></span>
+            <span class="chip"><strong>t</strong><span>${escapeHtml(d.t)}</span></span>
+          </div>
+          <p>${escapeHtml(d.summary)}</p>
+          <ul>${bullets}</ul>
+          ${notes}
+          <div class="mono"><strong>Plain-English mapping:</strong> ${escapeHtml(d.mapping)}</div>
+        `;
+      }
+
+      function applyShowMode(){
+        const nodeEls = svgEl.querySelectorAll('[data-node]');
+        const edgeEls = svgEl.querySelectorAll('[data-edge]');
+
+        const visibleA = (showMode === 'both' || showMode === 'A');
+        const visibleB = (showMode === 'both' || showMode === 'B');
+
+        nodeEls.forEach(el=>{
+          const id = el.getAttribute('data-node');
+          const isA = id.endsWith('a') || id === 'W1a';
+          const isB = id.endsWith('b') || id === 'W1b';
+          const isCommon = (id === 'S0' || id === 'x0');
+          let show = true;
+          if(isCommon) show = true;
+          else if(isA) show = visibleA;
+          else if(isB) show = visibleB;
+
+          el.classList.toggle('dim', !show);
+          el.style.pointerEvents = show ? 'auto' : 'none';
+        });
+
+        edgeEls.forEach(el=>{
+          const kind = el.getAttribute('data-kind');
+          let show = true;
+          if(kind === 'A') show = visibleA;
+          if(kind === 'B') show = visibleB;
+          if(kind === 'common') show = true;
+          el.style.opacity = show ? '1' : '0.2';
+        });
+
+        // update pressed states
+        btnShowBoth.setAttribute('aria-pressed', showMode==='both');
+        btnShowA.setAttribute('aria-pressed', showMode==='A');
+        btnShowB.setAttribute('aria-pressed', showMode==='B');
+      }
+
+      function setShowMode(mode){
+        showMode = mode;
+        applyShowMode();
+      }
+
+      function setFocusPath(p){
+        focusPath = p;
+        focusSelect.value = p;
+        stepIndex = 0;
+        updateActiveEdges(true);
+        // also select the first node if selection is empty
+        selectNode(focusNodes[focusPath][0], true);
+      }
+
+      function step(forward){
+        const seq = focusNodes[focusPath];
+        if(forward){
+          stepIndex = Math.min(seq.length - 1, stepIndex + 1);
+        }else{
+          stepIndex = Math.max(0, stepIndex - 1);
+        }
+        const id = seq[stepIndex];
+        selectNode(id, true);
+        updateActiveEdges(true);
+      }
+
+      function updateActiveEdges(force){
+        if(!svgEl) return;
+        const edgeEls = svgEl.querySelectorAll('[data-edge]');
+        edgeEls.forEach(el=>el.classList.remove('active'));
+
+        const seq = focusNodes[focusPath];
+        // activate edges up to current stepIndex
+        for(let i=0; i<stepIndex; i++){
+          const a = seq[i], b = seq[i+1];
+          const sel = `[data-edge="${cssEscape(a)}->${cssEscape(b)}"]`;
+          const el = svgEl.querySelector(sel);
+          if(el) el.classList.add('active');
+        }
+      }
+
+      function cssEscape(str){
+        return String(str).replace(/"/g,'\\"');
+      }
+
+      function togglePlay(){
+        const pressed = btnPlay.getAttribute('aria-pressed') === 'true';
+        if(pressed){
+          stopPlay();
+        }else{
+          startPlay();
+        }
+      }
+
+      function startPlay(){
+        stopPlay();
+        btnPlay.setAttribute('aria-pressed','true');
+        btnPlay.textContent = 'Pause';
+        playTimer = setInterval(()=>{
+          const seq = focusNodes[focusPath];
+          if(stepIndex >= seq.length - 1){
+            stopPlay();
+            return;
+          }
+          step(true);
+        }, 700);
+      }
+
+      function stopPlay(){
+        if(playTimer){ clearInterval(playTimer); playTimer = null; }
+        btnPlay.setAttribute('aria-pressed','false');
+        btnPlay.textContent = 'Play';
+      }
+
+      function downloadSvg(){
+        try{
+          const serializer = new XMLSerializer();
+          const src = serializer.serializeToString(svgEl);
+          const blob = new Blob([src], {type:'image/svg+xml;charset=utf-8'});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `climate-sequential-decision-paths-${showMode}.svg`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(()=>URL.revokeObjectURL(url), 800);
+          toast('Downloaded', 'Saved an SVG of the current diagram.', 'ok');
+        }catch(e){
+          console.error(e);
+          toast('Download failed', 'Could not export SVG in this browser context.', 'warn');
+        }
+      }
+
+      function wireControls(){
+        btnShowBoth.addEventListener('click', ()=>setShowMode('both'));
+        btnShowA.addEventListener('click', ()=>setShowMode('A'));
+        btnShowB.addEventListener('click', ()=>setShowMode('B'));
+        btnClear.addEventListener('click', ()=>{ stopPlay(); clearSelection(); });
+
+        focusSelect.addEventListener('change', ()=>{ stopPlay(); setFocusPath(focusSelect.value); });
+
+        btnStep.addEventListener('click', ()=>{ stopPlay(); step(true); });
+        btnStepBack.addEventListener('click', ()=>{ stopPlay(); step(false); });
+        btnPlay.addEventListener('click', togglePlay);
+
+        btnDownload.addEventListener('click', downloadSvg);
+
+        // Tap anywhere empty to clear selection (mobile-friendly)
+        stage.addEventListener('click', (ev)=>{
+          const target = ev.target;
+          if(!target.closest || !target.closest('[data-node]')) return;
+        });
+      }
+
+      // ---- Content details ----
+      function buildDetails(){
+        // Scenarios use real-world anchors (datasets and research programmes),
+        // but the quarter-by-quarter outcomes are hypothetical.
+        return {
+          S0: mkDetail('S0','state','State','t=0 (2028‑Q1)',
+            'Consortium is in “readiness + research” mode with an agreed governance baseline and expectations about near‑term temperature trends.',
+            [
+              'R0 (resources): funded programme office, monitoring contracts, early engineering work packages.',
+              'I0 (known info): baseline global mean temperature products (e.g., NASA GISTEMP, HadCRUT5, Copernicus streams) used for quarterly tracking.',
+              'B0 (beliefs): uncertainty about near‑term trend (ENSO, aerosol changes) and about SRM efficacy/risks.',
+              'Scope includes SRM research only (no climate‑altering deployment), plus parallel carbon‑removal readiness.'
+            ],
+            'S0 stores the information needed to decide x0 and simulate forward (R0, I0, B0).',
+            'This mirrors the idea that state is “what we know” at time t and may include current temperature as “other information” It.  (See the public sources below.)'
+          ),
+
+          x0: mkDetail('x0','decision','Decision','t=0 decision',
+            'Set the initial 2028 quarter scope and decision cadence.',
+            [
+              'Choose quarterly decision cadence (t = quarter) and a “stop‑rule” philosophy (pre‑defined triggers to pause escalation).',
+              'Fund independent monitoring & evaluation (MRV) and commission small, non‑climate‑altering field instrumentation work.',
+              'Create two contingency playbooks: one for hotter‑than‑expected warming, one for near‑track/milder outcomes.'
+            ],
+            'x0 is the controllable choice made using S0 (via a policy Xπ(S0)).',
+            'In Powell’s sequence, decisions are made from the state before new information arrives.  (See the public sources below.)'
+          ),
+
+          // W1 branch
+          W1a: mkDetail('W1a','info','Exogenous information','t=1 (2028 reading)',
+            'Scenario A: Updated 2028 global average temperature estimate comes in hotter than expected (relative to the project’s baseline forecast).',
+            [
+              'Monitoring products (e.g., GISTEMP/HadCRUT/Copernicus-style streams) indicate a sustained positive deviation vs expected quarterly trend.',
+              'Signals of increased heat extremes and political/media pressure to “do something now”.',
+              'Uncertainty remains: short-term variability and observational uncertainty must be separated from structural trend.'
+            ],
+            'W1ᵃ is exogenous information arriving after x0 and outside direct control.',
+            'This is exactly the “Wt+1 arrives after we decide xt” pattern.  (See the public sources below.)'
+          ),
+
+          W1b: mkDetail('W1b','info','Exogenous information','t=1 (2028 reading)',
+            'Scenario B: Updated 2028 global average temperature estimate is milder / near-track (relative to baseline expectations).',
+            [
+              'Monitoring products show warming consistent with expectation (or slightly below), reducing immediate “emergency” pressure.',
+              'This creates room to prioritise governance, risk assessment, and measurement campaigns.',
+              'Still: long-term trend is upward; the programme keeps contingency options alive.'
+            ],
+            'W1ᵇ is a different realization of the same exogenous information variable W1.',
+            'Different W1 outcomes produce different next states S1 and downstream decisions (branching sample paths).'
+          ),
+
+          // Path A
+          S1a: mkDetail('S1a','state','State','t=1 (2028‑Q2)',
+            'With hotter-than-expected W1, the project state shifts: urgency and scrutiny rise simultaneously.',
+            [
+              'R1: budget pressure increases; more engineering teams requested; governance staff expanded.',
+              'I1: temperature deviation is now part of the state (tracked as a key indicator).',
+              'B1: updated beliefs—higher probability of near-term overshoot; also higher perceived reputational risk.'
+            ],
+            'S1ᵃ summarises “what we know after seeing W1ᵃ”.',
+            'State updates reflect that W helps determine S next, which then drives the next decision.  (See the public sources below.)'
+          ),
+
+          x1a: mkDetail('x1a','decision','Decision','t=1 decision (2028‑Q2)',
+            'Fast‑track science + governance in parallel (aim: increase knowledge quickly without reckless deployment).',
+            [
+              'Accelerate measurement/field campaigns (e.g., marine aerosol plume measurement work like UW MCB research instrumentation campaigns).',
+              'Stand up an independent risk & ethics panel; begin drafting “limited pilot” conditions and stop rules.',
+              'Prepare (but do not yet execute) an SCoPEx‑like stratospheric dispersion study concept, noting SCoPEx itself ended/cancelled in 2024.'
+            ],
+            'x1ᵃ is the controlled response to S1ᵃ: accelerate learning while tightening governance guardrails.',
+            'Descriptors are informed by real programmes (UW MCB; SCoPEx history), but the decision is hypothetical.  (See the public sources below.)'
+          ),
+
+          W2a: mkDetail('W2a','info','Exogenous information','t=2 (2028‑Q2 observations)',
+            'New information arrives from outside the decision: early field results + governance signals.',
+            [
+              'Field measurements show whether aerosol generation / plume dispersion meets design expectations.',
+              'Regulatory and diplomatic feedback arrives (permits, public response, media narratives).',
+              'Temperature update continues to show elevated risk (or adds uncertainty about attribution).'
+            ],
+            'W2ᵃ is the bundle of exogenous outcomes after x1ᵃ.',
+            'In practice, W can include physical observations + social/political events the project cannot directly control.'
+          ),
+
+          S2a: mkDetail('S2a','state','State','t=2 (2028‑Q3)',
+            'The project is “pilot-ready” but constrained by guardrails: capability is higher, but so is sensitivity to side-effects and legitimacy.',
+            [
+              'R2: hardware prototypes + monitoring stack are ready for limited pilot; legal/oversight work packages are active.',
+              'I2: operational envelopes, monitoring thresholds, and updated climate indicators are embedded in state.',
+              'B2: beliefs about efficacy and risk tighten (variance shrinks) from field evidence.'
+            ],
+            'S2ᵃ stores the readiness + knowledge needed to make a go/no-go pilot decision x2ᵃ.',
+            'This is the iterative “state of knowledge” view of S.  (See the public sources below.)'
+          ),
+
+          x2a: mkDetail('x2a','decision','Decision','t=2 decision (2028‑Q3)',
+            'Go/no‑go for a limited, reversible pilot (with strict monitoring + pre-declared termination criteria).',
+            [
+              'Choose a “limited pilot” (e.g., localized marine cloud brightening test) versus “pause and learn more.”',
+              'Allocate budget to redundancy in monitoring (independent teams, multiple datasets).',
+              'Commit to public reporting cadence and independent audit.'
+            ],
+            'x2ᵃ is a controlled choice balancing urgency against uncertainty and legitimacy.',
+            'Decision set X_t depends on feasibility constraints (governance approvals, engineering readiness)  (See the public sources below.)'
+          ),
+
+          W3a: mkDetail('W3a','info','Exogenous information','t=3 (2028‑Q3 observations)',
+            'Exogenous outcomes: efficacy signals and possible side‑effect indicators arrive.',
+            [
+              'Observed cloud microphysics / aerosol behavior vs models (success or mismatch).',
+              'Early warnings (or reassurance) on regional climate side effects, e.g., precipitation anomalies.',
+              'Political response: support, moratoria, litigation, or conditions imposed by regulators.'
+            ],
+            'W3ᵃ arrives after x2ᵃ and is not fully controllable (even if influenced).',
+            'This is why policies must anticipate uncertainty in W.  (See the public sources below.)'
+          ),
+
+          S3a: mkDetail('S3a','state','State','t=3 (2028‑Q4)',
+            'Programme stabilises into a “guardrails-first” posture: higher capability, continuous risk review.',
+            [
+              'R3: monitoring expanded; contingency plans prepared; some pilots may be paused pending review.',
+              'I3: updated stop-rule thresholds and compliance status become part of the state.',
+              'B3: beliefs update again from pilot outcomes (Bayesian-like learning on efficacy/risks).'
+            ],
+            'S3ᵃ is the updated knowledge base before making x3ᵃ.',
+            'State is where you store “all the information you need from time t onward.”  (See the public sources below.)'
+          ),
+
+          x3a: mkDetail('x3a','decision','Decision','t=3 decision (2028‑Q4)',
+            'Choose whether to scale (slightly) under tight controls, or to revert to research mode.',
+            [
+              'If efficacy is promising and side-effect signals are acceptable: scale modestly + keep hard stop rules.',
+              'If not: freeze scaling, redirect to measurement and alternative approaches (e.g., focus on CDR).',
+              'Lock in governance commitments: data transparency, independent oversight, and international consultation.'
+            ],
+            'x3ᵃ is the “policy action” under uncertainty: it anticipates future W4ᵃ.',
+            'Good project directors act as if future decisions are uncertain because W will change the state.  (See the public sources below.)'
+          ),
+
+          W4a: mkDetail('W4a','info','Exogenous information','t=4 (2028‑Q4 observations)',
+            'External audits and climate indicators arrive, determining whether the programme’s trajectory is defensible.',
+            [
+              'Independent review reports on safety/ethics and scientific validity.',
+              'Updated climate indicators provide another quarter of trend evidence.',
+              'Geopolitical coordination (or conflict) evolves beyond the project’s direct control.'
+            ],
+            'W4ᵃ is the final quarter’s observed information in this t=0..4 horizon.',
+            'It drives the terminal state S4ᵃ.'
+          ),
+
+          S4a: mkDetail('S4a','state','Terminal state','t=4 (2029‑Q1)',
+            'Terminal state for Path A: a constrained, stabilised roadmap—either a tightly governed limited pilot regime or a controlled pause with strengthened monitoring.',
+            [
+              'R4: mature monitoring + governance apparatus; clear decision gates for future quarters.',
+              'I4: updated temperature and side-effect indicators; compliance posture.',
+              'B4: more confident beliefs about what is safe/unsafe to attempt next.'
+            ],
+            'S4ᵃ is the end of the shown horizon; in a longer model, decisions would continue beyond t=4.',
+            'Terminal states still carry R/I/B to support downstream continuation.  (See the public sources below.)'
+          ),
+
+          // Path B
+          S1b: mkDetail('S1b','state','State','t=1 (2028‑Q2)',
+            'With milder/near‑track W1, the project can prioritise legitimacy and learning rather than escalation.',
+            [
+              'R1: stable funding profile; slower ramp of engineering operations.',
+              'I1: monitoring continues, but no “emergency” deviation flag.',
+              'B1: beliefs shift modestly; emphasis on reducing uncertainty through measurement and governance.'
+            ],
+            'S1ᵇ reflects “more time available” as a state feature (lower urgency, higher option value).',
+            'State captures what’s needed to choose x1ᵇ.'
+          ),
+
+          x1b: mkDetail('x1b','decision','Decision','t=1 decision (2028‑Q2)',
+            'Double down on measurement, verification, and carbon removal readiness; keep SRM as a contingency only.',
+            [
+              'Expand independent monitoring and model intercomparison; formalise decision triggers for any outdoor tests.',
+              'Invest in scalable carbon removal pilots and supply chains (treated here as parallel workstreams in R).',
+              'Engage international processes early; publish protocols for transparency.'
+            ],
+            'x1ᵇ keeps optionality: it reduces uncertainty and increases governance readiness.',
+            'Temperature tracking relies on established global datasets used by monitoring agencies.  (See the public sources below.)'
+          ),
+
+          W2b: mkDetail('W2b','info','Exogenous information','t=2 (2028‑Q2 observations)',
+            'New information from research outputs + monitoring arrives.',
+            [
+              'Lab/field measurements refine feasibility assessments (e.g., aerosol generation characteristics).',
+              'Temperature trend estimate updates (still near-track, or beginning to drift).',
+              'Stakeholder feedback: support for cautious research, or calls for stricter limits.'
+            ],
+            'W2ᵇ arrives after x1ᵇ, updating S2ᵇ.',
+            'Even “governance feedback” is exogenous from the model’s perspective.'
+          ),
+
+          S2b: mkDetail('S2b','state','State','t=2 (2028‑Q3)',
+            'Validated models and calmer politics; the project accumulates knowledge without committing to climate-altering trials.',
+            [
+              'R2: monitoring capacity improves; research prototypes mature; governance process becomes clearer.',
+              'I2: dashboards track global mean temperature, uncertainties, and decision triggers.',
+              'B2: improved belief about efficacy/risks, with reduced uncertainty from measurement campaigns.'
+            ],
+            'S2ᵇ is “knowledge gained” without escalating deployment.',
+            'State variables are not just physical resources; they include information and beliefs.  (See the public sources below.)'
+          ),
+
+          x2b: mkDetail('x2b','decision','Decision','t=2 decision (2028‑Q3)',
+            'Adopt a conditional trigger for any outdoor pilot: proceed only if future W shows sustained overshoot and governance conditions are met.',
+            [
+              'Define trigger thresholds (e.g., sustained deviation of trend over multiple quarters).',
+              'Prepare a reversible, limited outdoor test plan (if ever needed), but remain in research mode now.',
+              'Allocate more budget to uncertainty reduction (sensors, independent replication, transparent reporting).'
+            ],
+            'x2ᵇ is a “wait-and-learn” policy design: it preserves options while improving information quality.',
+            'This matches the idea that policy design is about mapping states to actions under uncertainty.  (See the public sources below.)'
+          ),
+
+          W3b: mkDetail('W3b','info','Exogenous information','t=3 (2028‑Q3 observations)',
+            'Monitoring trend update and capacity signals arrive.',
+            [
+              'Either: continued near-track temperatures, or emerging upward drift that may meet trigger conditions.',
+              'Evidence on feasibility continues to accumulate (or flags unexpected complexity).',
+              'External politics may shift: increased interest, new restrictions, or new funding.'
+            ],
+            'W3ᵇ updates the state and may move the programme closer to triggering pilots (or not).',
+            'This is why W drives uncertainty about future decisions.'
+          ),
+
+          S3b: mkDetail('S3b','state','State','t=3 (2028‑Q4)',
+            'Ready but cautious: strong monitoring and governance maturity; SRM still contingency-only unless triggers fire.',
+            [
+              'R3: robust monitoring; prepared protocols; trained teams for limited tests if required.',
+              'I3: comprehensive state of indicators (temperature, uncertainty bands, stakeholder constraints).',
+              'B3: beliefs are better-calibrated; risk register is more evidence-based.'
+            ],
+            'S3ᵇ embodies “high option value” — ability to respond later with better information.',
+            'This supports better x3ᵇ decisions.'
+          ),
+
+          x3b: mkDetail('x3b','decision','Decision','t=3 decision (2028‑Q4)',
+            'Stay in research mode while scaling carbon removal readiness; re-check triggers next quarter.',
+            [
+              'If triggers not met: continue research, monitoring, and governance work; no outdoor climate-altering pilots.',
+              'If triggers are close: run additional measurement campaigns to reduce ambiguity before any escalation.',
+              'Commit to external review and transparency as a default operating mode.'
+            ],
+            'x3ᵇ is a conservative control decision based on the state of knowledge.',
+            'This reflects a policy that values learning and legitimacy.'
+          ),
+
+          W4b: mkDetail('W4b','info','Exogenous information','t=4 (2028‑Q4 observations)',
+            'Independent review and new climate indicators arrive.',
+            [
+              'External evaluation of research quality and governance robustness.',
+              'Another temperature/trend estimate update from monitoring products.',
+              'International policy developments alter feasible action sets.'
+            ],
+            'W4ᵇ arrives after x3ᵇ and sets up S4ᵇ.',
+            'As in Powell, W is exogenous, but may be state/action dependent in richer models.  (See the public sources below.)'
+          ),
+
+          S4b: mkDetail('S4b','state','Terminal state','t=4 (2029‑Q1)',
+            'Terminal state for Path B: a phased roadmap emphasising monitoring, governance, and scalable emissions reduction / CDR, with SRM as a tightly specified contingency.',
+            [
+              'R4: mature monitoring and governance; readiness without deployment.',
+              'I4: updated global temperature indicators; well-defined triggers and constraints.',
+              'B4: improved beliefs about what information still matters most to reduce uncertainty.'
+            ],
+            'S4ᵇ ends the shown horizon with maximum optionality and legitimacy.',
+            'It illustrates how different W1 outcomes generate different paths even with the same overall structure.'
+          ),
+        };
+      }
+
+      function mkDetail(id, type, kind, when, summary, bullets, mapping, notes){
+        const t = id.startsWith('S0') || id==='S0' || id==='x0' ? 0 :
+                  id.startsWith('W1') ? 1 :
+                  id.startsWith('S1') || id.startsWith('x1') ? 1 :
+                  id.startsWith('W2') ? 2 :
+                  id.startsWith('S2') || id.startsWith('x2') ? 2 :
+                  id.startsWith('W3') ? 3 :
+                  id.startsWith('S3') || id.startsWith('x3') ? 3 :
+                  id.startsWith('W4') || id.startsWith('S4') ? 4 : '?';
+        return { id, type, kind, when, summary, bullets, mapping, notes, t, title: id };
+      }
+
+      // ---- Watchdog (required) ----
+      function watchdog(){
+        const timeout = Number(APP.getAttribute('data-timeout') || 3000);
+        const start = Date.now();
+        const tick = ()=>{
+          const ok = APP.querySelector('[data-smoke="ok"]');
+          if(ok) return;
+          if(Date.now() - start > timeout){
+            fallback('timeout');
+            return;
+          }
+          setTimeout(tick, 500);
+        };
+        setTimeout(tick, 500);
+      }
+
+      // ---- Boot ----
+      try{
+        watchdog();
+        init();
+      }catch(e){
+        fallback(e);
+      }
+    })();
+  </script>
+</body>
+</html>

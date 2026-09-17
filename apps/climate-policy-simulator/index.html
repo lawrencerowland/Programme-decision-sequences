@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Climate Engineering Megaproject — Sequential Decision Analytics</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#11172b;
+    --panel2:#161e36;
+    --ink:#e8edf7;
+    --muted:#aab6cf;
+    --line:#2a3558;
+    --accent:#7cc4ff;
+    --good:#7ddc96;
+    --warn:#ffcb6b;
+    --bad:#ff8a8a;
+    --lav:#b2a4ff;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background:linear-gradient(180deg,#08101d,#0c1324 30%,#0d1528);
+    color:var(--ink);
+  }
+  header{
+    padding:24px 24px 18px 24px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(124,196,255,.08), transparent);
+    position:sticky; top:0; z-index:5; backdrop-filter: blur(8px);
+  }
+  h1{font-size:26px; margin:0 0 8px 0;}
+  h2{font-size:20px; margin:0 0 12px 0;}
+  h3{font-size:16px; margin:0 0 8px 0;}
+  p{line-height:1.45; color:var(--ink);}
+  .sub{color:var(--muted); max-width:1000px}
+  nav{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;
+  }
+  nav a{
+    color:var(--ink); text-decoration:none; border:1px solid var(--line);
+    padding:7px 10px; border-radius:999px; background:rgba(255,255,255,.02); font-size:13px;
+  }
+  main{max-width:1320px; margin:0 auto; padding:18px;}
+  section{margin:0 0 18px 0; padding:16px; background:rgba(17,23,43,.88); border:1px solid var(--line); border-radius:18px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:14px;}
+  .card{background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:12px;}
+  a{color:var(--accent)}
+  .grid2>*{min-width:0}
+  #benchmarkTable{overflow-x:auto}
+  pre{overflow-wrap:anywhere}
+  .chart{overflow:hidden}
+  .small{font-size:13px; color:var(--muted);}
+  .tiny{font-size:12px; color:var(--muted);}
+  .metric{font-size:28px; font-weight:700; letter-spacing:.2px;}
+  .pill{display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; margin-right:6px; border:1px solid var(--line);}
+  .accent{color:var(--accent)}
+  .good{color:var(--good)}
+  .warn{color:var(--warn)}
+  .bad{color:var(--bad)}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{padding:8px 6px; border-bottom:1px solid rgba(255,255,255,.06); text-align:left; vertical-align:top;}
+  th{color:#cfe0ff; font-weight:600;}
+  .chart{width:100%; min-height:280px; background:#0b1224; border:1px solid var(--line); border-radius:12px; padding:8px;}
+  .chart canvas, .chart svg{width:100%; height:100%;}
+  .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:end; margin:10px 0 12px;}
+  label{display:block; font-size:12px; color:var(--muted); margin-bottom:4px;}
+  select, input, textarea, button{
+    background:#0b1224; color:var(--ink); border:1px solid var(--line); border-radius:10px;
+    padding:8px 10px; font-size:14px;
+  }
+  textarea{width:100%; min-height:88px; resize:vertical;}
+  button{cursor:pointer; background:linear-gradient(180deg,#1c284b,#101935);}
+  button:hover{border-color:#3d4f7f}
+  .kpiRow{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:10px;}
+  .kpi{
+    background:#0b1224; border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+  }
+  .timeline{
+    max-height:420px; overflow:auto; border:1px solid var(--line); border-radius:12px; background:#0b1224;
+  }
+  .summaryBox{
+    padding:10px 12px; background:#0b1224; border:1px solid var(--line); border-radius:12px; margin-bottom:10px;
+  }
+  .badge{
+    display:inline-block; min-width:58px; text-align:center;
+    padding:3px 8px; border-radius:999px; font-size:12px; font-weight:600;
+  }
+  .b-dec{background:rgba(255,138,138,.12); color:var(--bad);}
+  .b-hold{background:rgba(124,196,255,.12); color:var(--accent);}
+  .b-inc{background:rgba(125,220,150,.12); color:var(--good);}
+  pre{
+    white-space:pre-wrap; padding:10px; background:#0b1224; border:1px solid var(--line); border-radius:12px;
+    color:#d7e3ff; margin:0;
+  }
+  .foot{color:var(--muted); font-size:12px; margin-top:8px;}
+  .twocol{columns:2; column-gap:18px;}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;}
+  @media (max-width: 1100px){
+    header{position:static}
+    .grid4,.grid3,.grid2,.kpiRow{grid-template-columns:1fr;}
+    .twocol{columns:1;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Climate engineering megaproject as a sequential decision problem</h1>
+  <div class="sub">
+    Compare five small decision policies on the same illustrative model: a direct rule, modified-cost search, approximate-value search, a short lookahead and a hybrid. Explore one path, many possible paths, scope-action ribbons and a framing tool for your own project. Coefficients are invented teaching assumptions; results are not climate forecasts or policy recommendations.
+  </div>
+  <nav>
+    <a href="../../experiments.html">Decision experiments</a>
+    <a href="#model">Model</a>
+    <a href="#policies">Policy classes</a>
+    <a href="#single">Single path</a>
+    <a href="#ensemble">Many paths</a>
+    <a href="#tool">Framing tool</a>
+    <a href="#notes">Notes</a>
+  </nav>
+</header>
+<main>
+  <section id="model">
+    <h2>1. Powell-style model specification</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Decision plan for the climate-megaproject</h3>
+        <div class="twocol">
+          <p><span class="pill">Operational actuation</span> The project carries a deployed intervention scope <span class="mono">u_t</span> that actually affects climate dynamics over the next quarter.</p>
+          <p><span class="pill">Management decisions</span> Each quarter management chooses a scope adjustment <span class="mono">Δu_t ∈ {−δ,0,+δ}</span>, a monitoring intensity <span class="mono">m_t</span>, and a governance / permitting push <span class="mono">e_t</span>.</p>
+          <p><span class="pill">Uncertainty reduction</span> Monitoring is an explicit information action. Higher <span class="mono">m_t</span> costs more and reduces measurement noise. Belief uncertainty contracts only when deployed scope exposes the unknown effectiveness; observing zero exposure teaches nothing about it.</p>
+          <p><span class="pill">Quarterly trigger</span> The management loop compares the observed quarterly temperature trend against the trend expected under the current belief state, then revises scope and information effort.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>State, information, transition, objective</h3>
+        <pre>{
+"State S_t": {
+  "Physical R_t": ["estimated temperature anomaly T̂_t", "active scope u_t", "funding balance B_t (soft limit)", "governance readiness G_t"],
+  "Information I_t": ["baseline warming trend g", "last observed quarterly trend y_t", "last expected trend ŷ_t"],
+  "Belief B_t": ["posterior mean μ_k,t of effectiveness", "posterior sd σ_k,t of effectiveness"]
+},
+"Decision x_t": ["scope change Δu_t", "monitoring level m_t", "governance effort e_t"],
+"Exogenous W_{t+1}": ["natural variability shock", "measurement noise", "governance shock", "cost shock"],
+"Transition": "S_{t+1} = S^M(S_t, x_t, W_{t+1})",
+"Objective": "minimize cumulative composite cost = temperature deviation + overshoot risk + spend + governance fragility + change friction"
+}</pre>
+      </div>
+    </div>
+    <p class="small">The simulator keeps the actual temperature and a fixed effectiveness coefficient separate from the manager’s state. Policies receive only the estimated level, scope, funding balance, observed readiness and posterior belief. New shocks and measurements arrive after the choice. The Gaussian belief update uses known process and measurement variances; its prior can assign weight to ineffective or adverse outcomes.</p>
+    <p class="small">Cost combines squared target deviation, extra exceedance penalty, spending, readiness shortfall, scope-change friction and funding deficit, discounted by 0.985 per quarter. Funding is a soft balance: negative values mean an unfunded model path, not approval to spend. The score uses actual simulated temperature after the outcome; decisions use estimates.</p>
+    <div class="controls" aria-label="Shared model assumptions">
+      <div><label for="modelTarget">Illustrative target (°C)</label><input id="modelTarget" type="number" min="1.2" max="2.5" step="0.01" value="1.5"></div>
+      <div><label for="modelTruth">World effectiveness (hidden from policy)</label><input id="modelTruth" type="number" min="0.001" max="0.06" step="0.001" value="0.018"></div>
+      <div><label for="modelPrior">Initial belief mean</label><input id="modelPrior" type="number" min="0.001" max="0.06" step="0.001" value="0.009"></div>
+      <div><label for="modelBudget">Initial funding balance</label><input id="modelBudget" type="number" min="1" max="200" step="1" value="70"></div>
+      <button id="refreshAll">Apply assumptions &amp; refresh all views</button>
+    </div>
+    <p id="inputStatus" class="small" role="status" aria-live="polite"></p>
+    <p class="foot">The seed, quarters and run count below apply to every comparison. Each refresh rebuilds the benchmark and both path views. <a href="https://warrenpowell.org/policies/">Powell’s policy taxonomy</a> · <a href="https://warrenpowell.org/universal-modeling-framework/">Model framework</a> · <a href="../../docs/decision-repairs-method.md">This model and repair record</a></p>
+  </section>
+
+  <section id="policies">
+    <h2>2. Implemented policy classes</h2>
+    <div class="grid4" id="policyCards"></div>
+    <div class="card" style="margin-top:12px">
+      <h3>Computed benchmark across policy representatives</h3>
+      <div class="small">Every row is recomputed from the current assumptions, horizon and seed batch. Policies share identical underlying shocks per seed; outcomes differ because their actions differ. Lower composite cost is better within this toy model.</div>
+      <div id="benchmarkTable" style="margin-top:10px"></div>
+      <div id="benchmarkComment" class="summaryBox" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section id="single">
+    <h2>3. Single-path simulation</h2>
+    <div class="controls">
+      <div>
+        <label for="singlePolicy">Policy</label>
+        <select id="singlePolicy">
+          <option>DLA</option>
+          <option>HYBRID</option>
+          <option>VFA</option>
+          <option>CFA</option>
+          <option>PFA</option>
+        </select>
+      </div>
+      <div>
+        <label for="singleSeed">Single seed / start of comparison batch</label>
+        <input id="singleSeed" type="number" value="7" min="0" max="4294967295" step="1">
+      </div>
+      <div>
+        <label for="singleHorizon">Quarters (all views)</label>
+        <input id="singleHorizon" type="number" value="40" min="8" max="60">
+      </div>
+      <div>
+        <button id="runSingleBtn">Run single path</button>
+      </div>
+    </div>
+    <div class="kpiRow" id="singleKPIs"></div>
+    <div id="singleNarrative" class="summaryBox"></div>
+    <div class="grid2">
+      <div class="chart" id="tempChart"></div>
+      <div class="chart" id="scopeChart"></div>
+      <div class="chart" id="budgetChart"></div>
+      <div class="chart" id="beliefChart"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>Quarterly log</h3>
+      <div class="timeline" id="singleTable"></div>
+    </div>
+  </section>
+
+  <section id="ensemble">
+    <h2>4. Many-path simulation and branching view</h2>
+    <div class="controls">
+      <div>
+        <label for="mcPolicy">Policy</label>
+        <select id="mcPolicy">
+          <option>DLA</option>
+          <option>HYBRID</option>
+          <option>VFA</option>
+          <option>CFA</option>
+          <option>PFA</option>
+        </select>
+      </div>
+      <div>
+        <label for="mcRuns">Monte Carlo runs</label>
+        <input id="mcRuns" type="number" value="24" min="8" max="60">
+      </div>
+      <div>
+        <button id="runMCBtn">Run many paths</button>
+      </div>
+      <div class="small" id="mcStatus"></div>
+    </div>
+    <div class="kpiRow" id="mcKPIs"></div>
+    <div class="grid2">
+      <div class="chart" id="mcTempChart"></div>
+      <div class="chart" id="mcScopeChart"></div>
+      <div class="chart" id="mcBudgetChart"></div>
+      <div class="chart" id="mcActionChart"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>Branching paths (scope-action ribbons)</h3>
+      <div class="small">Each polyline is one sample path. Vertical position encodes the scope decision that quarter: decrease / hold / increase. Bundles show how often this sampled policy chooses the same scope change; they do not establish robustness or optimality.</div>
+      <canvas id="ribbonCanvas" width="1100" height="320" style="width:100%; height:320px; margin-top:8px; background:#0b1224; border:1px solid var(--line); border-radius:12px;"></canvas>
+    </div>
+  </section>
+
+  <section id="tool">
+    <h2>5. Frame your own project as Powell + RL</h2>
+    <div class="grid2">
+      <div class="card">
+        <label>Decision cadence / time step</label>
+        <input id="toolCadence" value="Quarter">
+        <label style="margin-top:8px">Performance metric / objective</label>
+        <textarea id="toolObjective">Keep the project on target while controlling spend, schedule fragility, and uncertainty.</textarea>
+        <label style="margin-top:8px">Management decisions (one per line)</label>
+        <textarea id="toolDecisions">Adjust scope
+Choose monitoring intensity
+Allocate governance effort</textarea>
+        <label style="margin-top:8px">Exogenous information / uncertainties (one per line)</label>
+        <textarea id="toolUncertainties">Observed trend versus expectation
+Effectiveness of the intervention
+Permitting or political shocks
+Cost shocks</textarea>
+      </div>
+      <div class="card">
+        <label>Physical state R_t (one per line)</label>
+        <textarea id="toolR">Current project scope
+Remaining budget
+Schedule or readiness level</textarea>
+        <label style="margin-top:8px">Other information I_t (one per line)</label>
+        <textarea id="toolI">Latest forecast
+Known constraints
+Observed KPI last period</textarea>
+        <label style="margin-top:8px">Belief state B_t (one per line)</label>
+        <textarea id="toolB">Posterior mean of key uncertainty
+Posterior sd / confidence interval</textarea>
+        <label style="margin-top:8px">Objective type</label>
+        <select id="toolObjectiveType">
+          <option value="cumulative">Cumulative reward / cost</option>
+          <option value="final">Terminal reward / cost</option>
+        </select>
+        <div style="margin-top:10px">
+          <button id="toolBuildBtn">Generate project frame</button>
+          <button id="toolLoadClimateBtn">Load climate example</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card">
+        <h3>Powell frame</h3>
+        <pre id="toolPowell"></pre>
+      </div>
+      <div class="card">
+        <h3>Equivalent RL / MDP frame</h3>
+        <pre id="toolRL"></pre>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>Information-attention checklist</h3>
+      <div id="toolChecklist"></div>
+    </div>
+  </section>
+
+  <section id="notes">
+    <h2>6. Notes, limits, and interpretation</h2>
+    <div class="grid3">
+      <div class="card">
+        <h3>What this is</h3>
+        <p class="small">A stylized quarterly programme with a fixed hidden effectiveness and a conjugate Gaussian belief update. PFA is a declared rule; CFA modifies one-step cost; VFA adds a hand-written downstream value; DLA compares first actions using a four-quarter deterministic rollout and a PFA tail; the hybrid adds a terminal value.</p>
+      </div>
+      <div class="card">
+        <h3>What this is not</h3>
+        <p class="small">Not a physical climate model, not a welfare analysis, not a claim about the advisability of any real intervention, and not a trained deep-RL controller.</p>
+      </div>
+      <div class="card">
+        <h3>Why it is still useful</h3>
+        <p class="small">It separates state, choices, incoming information and outcomes, and lets you inspect a small representative of each class. The lookahead uses the current belief mean and expected observations; it does not value contingent future learning exactly, search all policies or establish which class is superior.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script id="decision-model">
+/* Pure model: no DOM, clock, unseeded randomness or access to future shocks. */
+globalThis.DecisionModel = (() => {
+  'use strict';
+  const POLICIES = ['PFA', 'CFA', 'VFA', 'DLA', 'HYBRID'];
+  const DEFAULTS = Object.freeze({horizon:40, seed:7, runs:24, target:1.5, trueK:0.018, priorMean:0.009, budget0:70});
+  const FIXED = Object.freeze({temp0:1.3, scope0:0.2, readiness0:0.55, baseTrend:0.0125, priorSD:0.003, processSD:0.0048, discount:0.985});
+  const MONITOR = Object.freeze({low:{sd:0.006,cost:0.05},med:{sd:0.0035,cost:0.12},high:{sd:0.002,cost:0.22}});
+  const clip = (x,a,b) => Math.max(a,Math.min(b,x));
+  function validateControls(input={}) {
+    const c={...DEFAULTS,...input};
+    const rules={horizon:[8,60,true],seed:[0,4294967295,true],runs:[8,60,true],target:[1.2,2.5,false],trueK:[0.001,0.06,false],priorMean:[0.001,0.06,false],budget0:[1,200,false]};
+    for(const [key,[lo,hi,integer]] of Object.entries(rules)) {
+      if(typeof c[key]!=='number'||!Number.isFinite(c[key])||c[key]<lo||c[key]>hi||(integer&&!Number.isInteger(c[key]))) throw new RangeError(`${key}: enter ${integer?'an integer':'a number'} from ${lo} to ${hi}.`);
+    }
+    return c;
+  }
+  function rng(seed) {
+    let a=seed>>>0;
+    const u=()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};
+    return {normal:()=>Math.sqrt(-2*Math.log(Math.max(u(),Number.MIN_VALUE)))*Math.cos(2*Math.PI*u())};
+  }
+  function makeShocks(seed,horizon) {
+    const r=rng(seed);
+    // Fixed draws per quarter: every policy sees the same underlying sample path.
+    return Array.from({length:horizon},()=>({governance:r.normal(),process:r.normal(),measurement:r.normal(),cost:r.normal()}));
+  }
+  function initialState(c) { return {temp:FIXED.temp0,scope:FIXED.scope0,budget:c.budget0,ready:FIXED.readiness0,mu:c.priorMean,variance:FIXED.priorSD**2,lastObs:0,lastPred:0}; }
+  function posterior(state,exposure,observation,monitor) {
+    const h=-exposure, noise=FIXED.processSD**2+MONITOR[monitor].sd**2;
+    const denominator=h*h*state.variance+noise, gain=state.variance*h/denominator;
+    return {mu:state.mu+gain*(observation-(FIXED.baseTrend+h*state.mu)),variance:Math.max(0,state.variance*noise/denominator)};
+  }
+  function actionTerms(state,a,shock={governance:0,cost:0}) {
+    const scope=clip(state.scope+a.du,0,1);
+    const ready=clip(0.9*state.ready+(a.e==='med'?0.05:0)+0.04*shock.governance,0,1);
+    const exposure=scope*(0.45+0.75*ready);
+    const spend=Math.max(0,0.45+2.4*scope+MONITOR[a.m].cost+(a.e==='med'?0.1:0.04)+0.08*shock.cost);
+    return {scope,ready,exposure,spend,budget:state.budget-spend};
+  }
+  function loss(temp,terms,a,c) {
+    const gap=temp-c.target;
+    return 70*gap*gap+140*Math.max(0,gap)**2+terms.spend+0.6*(1-terms.ready)**2+0.4*Math.abs(a.du)+0.04*Math.max(0,-terms.budget)**2;
+  }
+  // Project the belief-mean state and plug it into nonlinear loss; this is not E[loss].
+  function expectedStep(state,a,c) {
+    const terms=actionTerms(state,a), obs=FIXED.baseTrend-state.mu*terms.exposure;
+    const belief=posterior(state,terms.exposure,obs,a.m);
+    const next={temp:state.temp+obs,scope:terms.scope,ready:terms.ready,budget:terms.budget,mu:belief.mu,variance:belief.variance,lastObs:obs,lastPred:obs};
+    return {next,cost:loss(next.temp,terms,a,c),terms};
+  }
+  function candidateActions(state) {
+    const deltas=[0,-0.05,0.05].map(du=>clip(state.scope+du,0,1)-state.scope);
+    return [...new Set(deltas)].flatMap(du=>['low','med','high'].flatMap(m=>['low','med'].map(e=>({du,m,e}))));
+  }
+  function pfaAction(state,c) {
+    const projected=state.temp+6*(FIXED.baseTrend-state.mu*state.scope*(0.45+0.75*state.ready));
+    const du=state.budget<5?-0.05:projected>c.target+0.015?0.05:projected<c.target-0.06?-0.05:0;
+    return {du:clip(state.scope+du,0,1)-state.scope,m:state.variance>0.000007?'high':state.variance>0.000004?'med':'low',e:state.ready<0.6||du>0?'med':'low'};
+  }
+  function approximateValue(state,c,remaining) {
+    // Hand-written downstream penalty, not a learned value or an optimal value.
+    const n=Math.min(8,Math.max(0,remaining));
+    const projected=state.temp+n*(FIXED.baseTrend-state.mu*state.scope*(0.45+0.75*state.ready));
+    const terminalGap=projected-c.target;
+    return n*(70*terminalGap**2+140*Math.max(0,terminalGap)**2+0.4*(1-state.ready)**2)+n*0.025*Math.max(0,-state.budget)**2+Math.min(1,n)*40000*state.variance;
+  }
+  function scoreAction(policy,state,a,c,remaining) {
+    const first=expectedStep(state,a,c);
+    if(policy==='CFA') {
+      const conservative=first.next.temp+4*(FIXED.baseTrend-(state.mu-1.5*Math.sqrt(state.variance))*first.terms.exposure);
+      return first.cost+120*Math.max(0,conservative-c.target+0.02)**2+40000*first.next.variance;
+    }
+    if(policy==='VFA') return first.cost+FIXED.discount*approximateValue(first.next,c,remaining-1);
+    // Deterministic four-quarter rollout. Future decisions use the projected
+    // information state through the PFA tail, never the simulator's hidden truth.
+    const depth=Math.min(4,remaining);
+    let total=first.cost, projected=first.next;
+    for(let step=1;step<depth;step++) {
+      const tail=pfaAction(projected,c), next=expectedStep(projected,tail,c);
+      total+=FIXED.discount**step*next.cost;projected=next.next;
+    }
+    if(policy==='HYBRID') total+=FIXED.discount**depth*approximateValue(projected,c,remaining-depth);
+    return total;
+  }
+  function policyAction(policy,state,settings,remaining) {
+    if(!POLICIES.includes(policy)) throw new RangeError('Unknown policy.');
+    // The only policy inputs are the declared information state, known target
+    // and remaining horizon. trueK, shocks and hidden temperature are absent.
+    const c={target:settings.target};
+    if(policy==='PFA') return pfaAction(state,c);
+    let best=null,bestScore=Infinity;
+    for(const a of candidateActions(state)) {const score=scoreAction(policy,state,a,c,remaining);if(score<bestScore-1e-12){best=a;bestScore=score;}}
+    return best;
+  }
+  function realisedStep(state,world,a,shock,c) {
+    const terms=actionTerms(state,a,shock);
+    const pred=FIXED.baseTrend-state.mu*terms.exposure;
+    const delta=FIXED.baseTrend-world.k*terms.exposure+FIXED.processSD*shock.process;
+    const obs=delta+MONITOR[a.m].sd*shock.measurement;
+    const belief=posterior(state,terms.exposure,obs,a.m);
+    const next={temp:state.temp+obs,scope:terms.scope,ready:terms.ready,budget:terms.budget,mu:belief.mu,variance:belief.variance,lastObs:obs,lastPred:pred};
+    const nextWorld={k:world.k,temp:world.temp+delta};
+    return {next,world:nextWorld,obs,pred,spend:terms.spend,cost:loss(nextWorld.temp,terms,a,c)};
+  }
+  function simulate(policy,input={},suppliedShocks=null) {
+    const c=validateControls(input), shocks=suppliedShocks||makeShocks(c.seed,c.horizon);
+    if(shocks.length<c.horizon||shocks.slice(0,c.horizon).some(s=>['governance','process','measurement','cost'].some(k=>!Number.isFinite(s[k])))) throw new RangeError('A finite shock record is required for each quarter.');
+    let state=initialState(c),world={k:c.trueK,temp:FIXED.temp0},cost=0;const path=[];
+    for(let q=0;q<c.horizon;q++) {
+      const before={...state},a=policyAction(policy,before,{target:c.target},c.horizon-q);
+      const step=realisedStep(before,world,a,shocks[q],c);
+      cost+=step.cost*FIXED.discount**q;state=step.next;world=step.world;
+      path.push({q,temp_next:state.temp,true_temp_next:world.temp,scope_next:state.scope,budget_next:state.budget,readiness_next:state.ready,mu_k_next:state.mu,sigma_k_next:Math.sqrt(state.variance),obs:step.obs,pred:step.pred,du:a.du,m:a.m,e:a.e,spend:step.spend,stage_cost:step.cost,true_k:world.k,decision_state:before});
+    }
+    return {path,meta:{true_k:world.k,disc_cost:cost,policy,controls:c}};
+  }
+  function runBatch(policy,input={}) {
+    const c=validateControls(input);
+    return Array.from({length:c.runs},(_,i)=>simulate(policy,{...c,seed:(c.seed+i)>>>0}));
+  }
+  function quantile(values,p) {
+    if(!values.length||!values.every(Number.isFinite)||!Number.isFinite(p)||p<0||p>1) throw new RangeError('Quantile needs finite values and probability in [0,1].');
+    const sorted=[...values].sort((a,b)=>a-b),at=(sorted.length-1)*p,low=Math.floor(at),high=Math.ceil(at);
+    return sorted[low]+(sorted[high]-sorted[low])*(at-low);
+  }
+  function summarize(sims) {
+    const mean=values=>values.reduce((a,b)=>a+b,0)/values.length;
+    const costs=sims.map(s=>s.meta.disc_cost),meanCost=mean(costs),last=sims.map(s=>s.path.at(-1));
+    return {meanCost,sdCost:Math.sqrt(mean(costs.map(x=>(x-meanCost)**2))),finalTemp:mean(last.map(r=>r.temp_next)),finalTrueTemp:mean(last.map(r=>r.true_temp_next)),finalBudget:mean(last.map(r=>r.budget_next)),finalScope:mean(last.map(r=>r.scope_next)),finalReadiness:mean(last.map(r=>r.readiness_next)),guardrailMiss:mean(last.map(r=>Number(r.true_temp_next>sims[0].meta.controls.target)))};
+  }
+  function benchmark(input={}) {
+    const c=validateControls(input);
+    return Object.fromEntries(POLICIES.map(p=>[p,summarize(runBatch(p,c))]));
+  }
+  return Object.freeze({POLICIES,DEFAULTS,FIXED,MONITOR,validateControls,initialState,makeShocks,posterior,candidateActions,pfaAction,approximateValue,expectedStep,scoreAction,policyAction,realisedStep,simulate,runBatch,quantile,summarize,benchmark});
+})();
+</script>
+<script>
+const byId=id=>document.getElementById(id);
+const fmt=(x,d=2)=>Number(x).toFixed(d);
+function svgLine(elId,series,title,bands){
+  const el=byId(elId),w=760,h=280,m={l:42,r:12,t:16,b:24};
+  const xs=series[0].y.map((_,i)=>i); let vals=series.flatMap(s=>s.y); if(bands) vals=vals.concat(bands.lo,bands.hi);
+  const ymin=Math.min(...vals),ymax=Math.max(...vals),ypad=(ymax-ymin||1)*0.08;
+  const xm=x=>m.l+x/(xs.length-1||1)*(w-m.l-m.r), ym=y=>h-m.b-(y-(ymin-ypad))/((ymax-ymin)+2*ypad||1)*(h-m.t-m.b);
+  el.innerHTML=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"></svg>`; const s=el.firstChild;
+  const add=(n,a,t)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));if(t)e.textContent=t;s.appendChild(e);return e};
+  add('rect',{x:0,y:0,width:w,height:h,fill:'#0b1224'});
+  if(bands){ let d=''; xs.forEach((x,i)=>d+=(i?'L':'M')+xm(x)+','+ym(bands.hi[i])); for(let i=xs.length-1;i>=0;i--) d+='L'+xm(xs[i])+','+ym(bands.lo[i]); add('path',{d:d+'Z',fill:'rgba(124,196,255,.16)'}); }
+  series.forEach(sr=>{ let d=''; xs.forEach((x,i)=>d+=(i?'L':'M')+xm(x)+','+ym(sr.y[i])); add('path',{d,fill:'none',stroke:sr.c,'stroke-width':2}); });
+  add('text',{x:m.l,y:12,fill:'#d7e3ff','font-size':12},title);
+}
+
+function renderPolicyCards(){
+  const defs=[['PFA','Policy function approximation','Direct six-quarter trend rule; uncertainty sets monitoring and readiness sets governance. Hand-designed, not fitted.'],['CFA','Cost function approximation','Enumerate feasible scope increments × monitoring × governance. Minimise belief-mean immediate loss plus conservative target and posterior-variance penalties. Nonlinear loss is evaluated at the projected mean, not averaged over uncertainty.'],['VFA','Value function approximation','Minimise belief-mean immediate loss plus an explicit hand-written downstream value. This plug-in approximation is not an expected-loss integral or a learned value.'],['DLA','Direct lookahead approximation','Try each first action, then use PFA for the remaining steps of an at-most-four-quarter deterministic rollout. Belief-mean forecasts; no scenario tree or optimality claim.'],['HYBRID','Lookahead + terminal value','Use the same short rollout as DLA and add VFA’s approximate remaining value at its boundary.']];
+  byId('policyCards').innerHTML=defs.map(d=>`<div class="card"><div class="pill">${d[0]}</div><h3>${d[1]}</h3><div class="small">${d[2]}</div></div>`).join('');
+}
+function renderBenchmark(settings){
+  const rows=Object.entries(DecisionModel.benchmark(settings)).sort((a,b)=>a[1].meanCost-b[1].meanCost);
+  byId('benchmarkTable').innerHTML='<table><thead><tr><th>Policy</th><th>Mean cost</th><th>Cost sd</th><th>Actual final temp</th><th>Final balance</th><th>Target exceeded</th></tr></thead><tbody>'+rows.map(([k,v])=>`<tr><td><b>${k}</b></td><td>${fmt(v.meanCost,1)}</td><td>${fmt(v.sdCost,1)}</td><td>${fmt(v.finalTrueTemp,3)}</td><td>${fmt(v.finalBudget,1)}</td><td>${fmt(100*v.guardrailMiss,0)}%</td></tr>`).join('')+'</tbody></table>';
+  byId('benchmarkComment').textContent=`${settings.runs} shared seeds starting at ${settings.seed}; ${settings.horizon} quarters; target ${settings.target}; fixed world effectiveness ${settings.trueK}; prior mean ${settings.priorMean}. ${rows[0][0]} has the lowest sample mean in this run. This is a comparison of these representatives on the declared toy model, not evidence that its policy class is generally best. Negative funding balances mark model shortfalls.`;
+}
+function renderSingle(sim){
+  const p=sim.path,last=p[p.length-1];
+  byId('singleKPIs').innerHTML=`<div class="kpi"><div class="tiny">Discounted cost</div><div class="metric">${fmt(sim.meta.disc_cost,1)}</div></div><div class="kpi"><div class="tiny">Final estimate</div><div class="metric">${fmt(last.temp_next,3)}°C</div></div><div class="kpi"><div class="tiny">Final balance</div><div class="metric">${fmt(last.budget_next,1)}</div></div><div class="kpi"><div class="tiny">Final scope</div><div class="metric">${fmt(last.scope_next,2)}</div></div><div class="kpi"><div class="tiny">Belief σ</div><div class="metric">${fmt(last.sigma_k_next,4)}</div></div>`;
+  byId('singleNarrative').textContent=`${p.length} quarters simulated. Final observed trend ${fmt(last.obs,3)} vs expected ${fmt(last.pred,3)}. World effectiveness stayed ${fmt(sim.meta.true_k,4)}; final belief mean is ${fmt(last.mu_k_next,4)}. The blue temperature line is the manager’s estimate; purple is actual simulator temperature, shown after the run.`;
+  svgLine('tempChart',[{y:p.map(r=>r.temp_next),c:'#7cc4ff'},{y:p.map(r=>r.true_temp_next),c:'#b2a4ff'}],'Estimated (blue) / actual (purple) temperature');
+  svgLine('scopeChart',[{y:p.map(r=>r.scope_next),c:'#7ddc96'},{y:p.map(r=>r.readiness_next),c:'#b2a4ff'}],'Scope (green) & readiness (purple)');
+  svgLine('budgetChart',[{y:p.map(r=>r.budget_next),c:'#ffcb6b'}],'Funding balance (negative = shortfall)');
+  svgLine('beliefChart',[{y:p.map(r=>r.mu_k_next),c:'#7cc4ff'},{y:p.map(r=>r.sigma_k_next),c:'#ff8a8a'}],'Belief mean (blue) & standard deviation (red)');
+  byId('singleTable').innerHTML='<table><thead><tr><th>Q</th><th>Action</th><th>Obs vs pred</th><th>State</th></tr></thead><tbody>'+p.map(r=>`<tr><td>${r.q+1}</td><td>${r.du>0?'Increase':r.du<0?'Decrease':'Hold'}<div class="tiny">m=${r.m}, e=${r.e}</div></td><td>${fmt(r.obs,3)} vs ${fmt(r.pred,3)}</td><td class="tiny">T ${fmt(r.temp_next,3)}, scope ${fmt(r.scope_next,2)}, budget ${fmt(r.budget_next,1)}</td></tr>`).join('')+'</tbody></table>';
+}
+function renderEnsemble(policy,settings){
+  const sims=DecisionModel.runBatch(policy,settings), runs=settings.runs;
+  const T=settings.horizon;
+  const median=arr=>DecisionModel.quantile(arr,0.5), q=DecisionModel.quantile;
+  const temp={m:[],lo:[],hi:[]},scope={m:[],lo:[],hi:[]},budget={m:[],lo:[],hi:[]};
+  const actionFrac={};
+  for(let t=0;t<T;t++){
+    const temps=sims.map(s=>s.path[t].temp_next), scopes=sims.map(s=>s.path[t].scope_next), budgets=sims.map(s=>s.path[t].budget_next), dus=sims.map(s=>s.path[t].du);
+    [['temp',temps],['scope',scopes],['budget',budgets]].forEach(([k,a])=>{const o={temp,scope,budget}[k];o.m.push(median(a));o.lo.push(q(a,0.1));o.hi.push(q(a,0.9));});
+    actionFrac[t]={dec:dus.filter(x=>x<0).length/runs,hold:dus.filter(x=>x===0).length/runs,inc:dus.filter(x=>x>0).length/runs};
+  }
+  const costs=sims.map(s=>s.meta.disc_cost), mean=costs.reduce((a,b)=>a+b,0)/runs;
+  byId('mcKPIs').innerHTML=`<div class="kpi"><div class="tiny">Mean cost</div><div class="metric">${fmt(mean,1)}</div></div><div class="kpi"><div class="tiny">Final estimate median</div><div class="metric">${fmt(temp.m[T-1],3)}</div></div><div class="kpi"><div class="tiny">Final balance median</div><div class="metric">${fmt(budget.m[T-1],1)}</div></div><div class="kpi"><div class="tiny">Final scope median</div><div class="metric">${fmt(scope.m[T-1],2)}</div></div><div class="kpi"><div class="tiny">Runs</div><div class="metric">${runs}</div></div>`;
+  svgLine('mcTempChart',[{y:temp.m,c:'#7cc4ff'}],'Estimated temperature: median, P10–P90',{lo:temp.lo,hi:temp.hi});
+  svgLine('mcScopeChart',[{y:scope.m,c:'#7ddc96'}],'Scope: median, P10–P90',{lo:scope.lo,hi:scope.hi});
+  svgLine('mcBudgetChart',[{y:budget.m,c:'#ffcb6b'}],'Funding balance: median, P10–P90',{lo:budget.lo,hi:budget.hi});
+  const qs=Object.keys(actionFrac), el=byId('mcActionChart');
+  el.innerHTML='<svg viewBox="0 0 760 280" preserveAspectRatio="none"></svg>'; const s=el.firstChild, m={l:42,r:12,t:16,b:24}, bw=(760-m.l-m.r)/qs.length;
+  const add=(n,a)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));s.appendChild(e)};
+  add('rect',{x:0,y:0,width:760,height:280,fill:'#0b1224'});
+  qs.forEach((q,i)=>{const a=actionFrac[q],x=m.l+i*bw,h=280-m.t-m.b;let y=280-m.b;[['inc','#7ddc96',a.inc],['hold','#7cc4ff',a.hold],['dec','#ff8a8a',a.dec]].forEach(([_,c,v])=>{const hh=h*v;y-=hh;add('rect',{x:x+1,y,width:bw-2,height:hh,fill:c,opacity:0.8});});});
+  const c=byId('ribbonCanvas'),ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='#0b1224'; ctx.fillRect(0,0,c.width,c.height);
+  sims.forEach(sim=>{ctx.beginPath(); sim.path.forEach((r,i)=>{const x=45+i/(T-1)*(c.width-60),y=r.du<0?80:r.du>0?240:160; if(!i)ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.strokeStyle='rgba(124,196,255,.18)'; ctx.stroke();});
+}
+function parseLines(t){return t.split(/\r?\n/).map(s=>s.trim()).filter(Boolean)}
+function buildTool(){
+  const cadence=byId('toolCadence').value.trim()||'Quarter';
+  const decisions=parseLines(byId('toolDecisions').value), u=parseLines(byId('toolUncertainties').value), R=parseLines(byId('toolR').value), I=parseLines(byId('toolI').value), B=parseLines(byId('toolB').value);
+  byId('toolPowell').textContent=JSON.stringify({"Time step":cadence,"State S_t":{"Physical R_t":R,"Information I_t":I,"Belief B_t":B},"Decision x_t":decisions,"Exogenous W_{t+1}":u,"Transition":"S_{t+1}=S^M(S_t,x_t,W_{t+1})","Objective":byId('toolObjective').value.trim()},null,2);
+  byId('toolRL').textContent=JSON.stringify({"State s_t":"Belief-augmented state from S_t","Action a_t":decisions,"Reward r_t":byId('toolObjectiveType').value==='cumulative'?'Per-period reward / negative cost':'Terminal reward at horizon','Transition':'P(s_{t+1}|s_t,a_t) from simulator/assumptions'},null,2);
+  byId('toolChecklist').innerHTML='<p><b>Cadence:</b> Ensure decision cadence matches information update speed.</p><p><b>Belief state:</b> Put learned uncertainty summaries in B_t.</p><p><b>Information actions:</b> Model monitoring/testing as explicit decisions.</p>';
+}
+function loadClimateExample(){
+  const example={toolCadence:'Quarter',toolObjective:'Minimise cumulative target deviation, excess temperature, spend, readiness shortfall, change friction and funding deficit.',toolDecisions:'Adjust deployed scope\nChoose monitoring intensity\nAllocate governance effort',toolUncertainties:'Process variation\nNew noisy trend observation\nReadiness shock\nCost shock',toolR:'Active scope\nFunding balance\nObserved governance readiness',toolI:'Estimated temperature level\nKnown baseline trend\nLast observed trend',toolB:'Posterior mean of effectiveness\nPosterior variance of effectiveness'};
+  Object.entries(example).forEach(([id,value])=>byId(id).value=value);byId('toolObjectiveType').value='cumulative';buildTool();
+}
+function readControls(){
+  const ids={horizon:'singleHorizon',seed:'singleSeed',runs:'mcRuns',target:'modelTarget',trueK:'modelTruth',priorMean:'modelPrior',budget0:'modelBudget'};
+  const input={};for(const [key,id] of Object.entries(ids)){const el=byId(id);if(el.value.trim()==='')throw new RangeError(`${el.labels[0].textContent}: enter a value.`);input[key]=Number(el.value);}
+  return DecisionModel.validateControls(input);
+}
+function refreshAll(){
+  try{
+    const settings=readControls();
+    renderBenchmark(settings);
+    renderSingle(DecisionModel.simulate(byId('singlePolicy').value,settings));
+    renderEnsemble(byId('mcPolicy').value,settings);
+    byId('inputStatus').textContent=`All views refreshed from the same assumptions and ${settings.horizon}-quarter horizon.`;
+    byId('mcStatus').textContent=`${settings.runs} paths; seeds ${settings.seed} onward.`;
+  }catch(error){byId('inputStatus').textContent=error.message+' Previous results remain unchanged.';}
+}
+byId('runSingleBtn').addEventListener('click',refreshAll);
+byId('runMCBtn').addEventListener('click',refreshAll);
+byId('refreshAll').addEventListener('click',refreshAll);
+byId('toolBuildBtn').addEventListener('click',buildTool);
+byId('toolLoadClimateBtn').addEventListener('click',loadClimateExample);
+for(const id of ['singleHorizon','singleSeed','mcRuns','modelTarget','modelTruth','modelPrior','modelBudget','singlePolicy','mcPolicy'])byId(id).addEventListener('input',()=>{byId('inputStatus').textContent='Inputs changed. Refresh to apply them; displayed results still describe the previous run.';});
+renderPolicyCards();refreshAll();buildTool();
+</script>
+</body>
+</html>
